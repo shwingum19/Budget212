@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROJECT 212 — BUDGET</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D0D0D;--bg2:#111111;--bg3:#181818;
+  --surface:#141414;--surface2:#1C1C1C;
+  --border:rgba(255,79,163,0.14);--border2:rgba(255,79,163,0.32);
+  --pink:#FF4FA3;--pink2:#FF7FC0;--pink3:rgba(255,79,163,0.08);
+  --glow:0 0 10px rgba(255,79,163,0.55),0 0 28px rgba(255,79,163,0.15);
+  --glow-sm:0 0 5px rgba(255,79,163,0.4);
+  --white:#FFFFFF;--gray:#888;--gray2:#444;--gray3:#2A2A2A;
+  --green:#4ADE80;--green-dim:rgba(74,222,128,0.08);
+  --red:#F87171;--red-dim:rgba(248,113,113,0.08);
+  --mono:'Share Tech Mono',monospace;
+  --display:'Orbitron',monospace;
+  --body:'Inter',sans-serif;
+  --r:3px;
+}
+body{font-family:var(--body);background:var(--bg);color:var(--white);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);pointer-events:none;z-index:999}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,79,163,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,79,163,0.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:1.5rem}
+
+/* ── HEADER ── */
+.header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.75rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border2);position:relative;gap:1rem;flex-wrap:wrap}
+.header::after{content:'';position:absolute;bottom:-1px;left:0;width:80px;height:2px;background:var(--pink);box-shadow:var(--glow)}
+.logo-area{display:flex;align-items:center;gap:14px}
+.logo-mark{display:flex;flex-direction:column;align-items:center}
+.logo-num{font-family:var(--display);font-size:32px;font-weight:900;color:var(--pink);text-shadow:var(--glow);line-height:1;letter-spacing:2px}
+.logo-sub{font-family:var(--display);font-size:7px;font-weight:600;color:var(--gray);letter-spacing:3px;text-transform:uppercase;margin-top:2px}
+.header-info h1{font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:4px;color:var(--white);text-transform:uppercase}
+.header-info .tagline{font-family:var(--mono);font-size:10px;color:var(--gray);letter-spacing:2px;margin-top:4px}
+.header-info .tagline span{color:var(--pink)}
+.last-save{font-family:var(--mono);font-size:9px;color:var(--gray2);margin-top:4px}
+.header-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.5rem;overflow-x:auto}
+.tab{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:9px 18px;cursor:pointer;border:none;background:none;color:var(--gray);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:.15s}
+.tab:hover{color:var(--white)}
+.tab.active{color:var(--pink);border-bottom-color:var(--pink);text-shadow:var(--glow-sm)}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* ── BUTTONS ── */
+.btn{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;padding:7px 14px;border-radius:var(--r);cursor:pointer;border:1px solid var(--border2);background:var(--pink3);color:var(--pink2);transition:.15s;text-transform:uppercase;white-space:nowrap}
+.btn:hover{background:rgba(255,79,163,0.16);border-color:var(--pink);color:var(--pink);box-shadow:var(--glow-sm)}
+.btn-primary{background:var(--pink);color:#000;border-color:var(--pink);font-weight:700;box-shadow:var(--glow)}
+.btn-primary:hover{background:var(--pink2);box-shadow:0 0 18px rgba(255,79,163,0.7)}
+.btn-ghost{border-color:var(--gray2);background:transparent;color:var(--gray)}
+.btn-ghost:hover{border-color:var(--gray);color:var(--white);background:rgba(255,255,255,0.03)}
+.btn-green{border-color:rgba(74,222,128,0.35);background:var(--green-dim);color:var(--green)}
+.btn-green:hover{border-color:var(--green);box-shadow:0 0 6px rgba(74,222,128,0.3)}
+.btn-red{border-color:rgba(248,113,113,0.35);background:var(--red-dim);color:var(--red)}
+.btn-sm{padding:4px 10px;font-size:9px}
+.btn-xs{padding:2px 7px;font-size:9px}
+
+/* ── TOTALS BAR ── */
+.totals-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.total-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;position:relative;overflow:hidden}
+.total-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.total-card.rec::before{background:var(--green);box-shadow:0 0 8px var(--green)}
+.total-card.dep::before{background:var(--red);box-shadow:0 0 8px var(--red)}
+.total-card.sol::before{background:var(--pink);box-shadow:var(--glow)}
+.tc-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:7px}
+.tc-val{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:1px}
+.total-card.rec .tc-val{color:var(--green)}
+.total-card.dep .tc-val{color:var(--red)}
+.total-card.sol .tc-val{color:var(--pink);text-shadow:var(--glow)}
+.tc-sub{font-family:var(--mono);font-size:9px;color:var(--gray2);margin-top:3px}
+.prog-wrap{margin-top:8px}
+.prog-track{height:2px;background:var(--gray3);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;transition:width .5s}
+.prog-fill.r{background:var(--green)}
+.prog-fill.d{background:var(--red)}
+.prog-lbl{font-family:var(--mono);font-size:8px;color:var(--gray2);margin-top:3px;text-align:right}
+
+/* ── BUDGET PANELS ── */
+.panels-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:.65rem 1rem;border-bottom:1px solid var(--border);background:var(--surface2);position:relative}
+.panel-head::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.panel.rec .panel-head::before{background:var(--green)}
+.panel.dep .panel-head::before{background:var(--red)}
+.panel-title{font-family:var(--display);font-size:10px;font-weight:600;letter-spacing:3px}
+.panel.rec .panel-title{color:var(--green)}
+.panel.dep .panel-title{color:var(--red)}
+.panel-tot{font-family:var(--mono);font-size:12px}
+.panel.rec .panel-tot{color:var(--green)}
+.panel.dep .panel-tot{color:var(--red)}
+
+/* ── SECTIONS ── */
+.bsec{border-bottom:1px solid var(--border)}
+.bsec:last-child{border-bottom:none}
+.sec-head{display:flex;align-items:center;gap:8px;padding:.55rem 1rem;cursor:pointer;background:none;border:none;width:100%;text-align:left;transition:background .15s}
+.sec-head:hover{background:rgba(255,79,163,0.03)}
+.sec-name{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);flex:1;display:flex;align-items:center;gap:7px}
+.sec-name::before{content:'//';color:var(--pink);font-size:9px;opacity:.5}
+.sec-tot{font-family:var(--mono);font-size:11px;color:var(--white)}
+.sec-arr{font-family:var(--mono);font-size:9px;color:var(--gray2);transition:transform .2s}
+.sec-arr.open{transform:rotate(90deg)}
+.sec-items{display:none;padding:.15rem 0 .35rem}
+.sec-items.open{display:block}
+
+/* ── LINE ITEMS ── */
+.li{display:grid;grid-template-columns:1fr 80px 60px 80px 75px 24px;gap:5px;align-items:center;padding:.3rem 1rem .3rem 1.75rem;position:relative;transition:background .1s}
+.li::before{content:'';position:absolute;left:1rem;top:50%;transform:translateY(-50%);width:3px;height:3px;border-radius:50%;background:var(--gray2)}
+.li:hover{background:rgba(255,255,255,0.015)}
+.li:hover::before{background:var(--pink)}
+.li-lbl{font-size:12px;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-lbl.editing{background:var(--bg3);border:1px solid var(--pink);border-radius:var(--r);color:var(--white);font-family:var(--body);font-size:12px;padding:2px 5px;width:100%}
+.li-inp{font-family:var(--mono);font-size:11px;background:var(--bg3);border:1px solid var(--gray2);border-radius:var(--r);color:var(--white);padding:3px 6px;text-align:right;transition:.15s;width:100%}
+.li-inp:focus{outline:none;border-color:var(--pink);box-shadow:0 0 4px rgba(255,79,163,0.25)}
+.li-unit{font-family:var(--mono);font-size:9px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-tot{font-family:var(--mono);font-size:11px;font-weight:600;text-align:right}
+.panel.rec .li-tot{color:var(--green)}
+.panel.dep .li-tot{color:var(--red)}
+.li-del{background:none;border:none;cursor:pointer;color:var(--gray2);font-size:11px;padding:2px;opacity:0;transition:.15s}
+.li:hover .li-del{opacity:1}
+.li-del:hover{color:var(--red)}
+
+/* ── SUB-SECTIONS ── */
+.subsec{margin:.2rem 1rem .4rem;border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.sub-head{display:flex;align-items:center;gap:7px;padding:.38rem .75rem;cursor:pointer;background:none;border:none;width:100%;text-align:left;background:var(--bg3);transition:.15s}
+.sub-head:hover{background:rgba(255,79,163,0.04)}
+.sub-name{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--pink2);flex:1}
+.sub-tot{font-family:var(--mono);font-size:9px}
+.panel.rec .sub-tot{color:var(--green)}
+.panel.dep .sub-tot{color:var(--red)}
+.sub-arr{font-family:var(--mono);font-size:8px;color:var(--gray2);transition:transform .2s}
+.sub-arr.open{transform:rotate(90deg)}
+.sub-items{display:none}
+.sub-items.open{display:block}
+.sub-li{display:grid;grid-template-columns:1fr 80px 60px 80px 75px 24px;gap:5px;align-items:center;padding:.28rem .75rem .28rem 1.2rem;transition:background .1s}
+.sub-li:hover{background:rgba(255,255,255,0.015)}
+.sub-li .li-del{opacity:0}
+.sub-li:hover .li-del{opacity:1}
+
+/* ── ADD ROW ── */
+.add-row{padding:.38rem .9rem;display:flex;gap:5px;align-items:center;border-top:1px solid var(--border);flex-wrap:wrap}
+.add-inp{font-family:var(--mono);font-size:10px;background:var(--bg3);border:1px solid var(--gray2);border-radius:var(--r);color:var(--white);padding:4px 7px;transition:.15s}
+.add-inp:focus{outline:none;border-color:var(--pink)}
+.add-inp.lbl{flex:1;min-width:80px}
+.add-inp.num{width:65px;text-align:right}
+.add-inp.unt{width:58px}
+.panel-foot{padding:.65rem 1rem;border-top:1px solid var(--border);display:flex;gap:6px}
+
+/* ── CHARTS ── */
+.charts-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem;position:relative}
+.chart-card-title{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:.75rem}
+.chart-card canvas{display:block;height:190px !important;max-height:190px;width:100% !important}
+.chart-dl-btn{position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:9px;padding:3px 8px;border:1px solid var(--border2);background:transparent;color:var(--gray);cursor:pointer;border-radius:var(--r);transition:.15s}
+.chart-dl-btn:hover{color:var(--pink);border-color:var(--pink)}
+
+/* ── NOTES ── */
+.notes-inp{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);color:var(--gray);font-family:var(--mono);font-size:10px;padding:.75rem 1rem;resize:vertical;min-height:60px;line-height:1.7}
+.notes-inp:focus{outline:none;border-color:var(--pink)}
+
+/* ── MATERIEL TAB ── */
+.mat-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.mat-title{font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:3px;color:var(--pink);text-transform:uppercase}
+.mat-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:1.25rem}
+.ms-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.75rem 1rem}
+.ms-label{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);margin-bottom:5px}
+.ms-val{font-family:var(--display);font-size:16px;font-weight:700}
+.ms-card.owned .ms-val{color:var(--green)}
+.ms-card.needed .ms-val{color:var(--red)}
+.ms-card.cost .ms-val{color:var(--pink);text-shadow:var(--glow-sm)}
+.mat-table-wrap{overflow-x:auto}
+.mat-table{width:100%;border-collapse:collapse;font-size:12px}
+.mat-table th{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+.mat-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.mat-table tr:last-child td{border-bottom:none}
+.mat-table tbody tr:hover td{background:rgba(255,255,255,0.015)}
+.mat-inp{font-family:var(--mono);font-size:11px;background:var(--bg3);border:1px solid var(--gray2);border-radius:var(--r);color:var(--white);padding:3px 7px;transition:.15s}
+.mat-inp:focus{outline:none;border-color:var(--pink)}
+.mat-inp.w-lbl{width:100%;min-width:120px}
+.mat-inp.w-cat{width:110px}
+.mat-inp.w-num{width:75px;text-align:right}
+.mat-inp.w-unit{width:65px}
+.status-btn{font-family:var(--mono);font-size:9px;padding:3px 10px;border-radius:var(--r);border:1px solid;cursor:pointer;transition:.15s;font-weight:600;text-transform:uppercase}
+.status-btn.owned{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.status-btn.needed{border-color:var(--red);background:var(--red-dim);color:var(--red)}
+.status-btn:hover{opacity:.75}
+.mat-section-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray2);padding:.5rem 10px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mat-cat-total{color:var(--pink);font-size:9px}
+.del-btn{background:none;border:none;cursor:pointer;color:var(--gray2);font-size:11px;padding:2px 4px;transition:.15s}
+.del-btn:hover{color:var(--red)}
+.edit-btn{background:none;border:none;cursor:pointer;color:var(--gray2);font-size:11px;padding:2px 4px;transition:.15s}
+.edit-btn:hover{color:var(--pink)}
+
+/* ── SECTION DIVIDER ── */
+.sec-div{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray2);display:flex;align-items:center;gap:8px;margin-bottom:.75rem}
+.sec-div::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── MODAL ── */
+.modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px)}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:1.5rem;width:100%;max-width:440px;box-shadow:0 0 40px rgba(255,79,163,0.12);position:relative}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--pink);box-shadow:var(--glow);border-radius:var(--r) var(--r) 0 0}
+.modal h3{font-family:var(--display);font-size:12px;letter-spacing:3px;color:var(--pink);margin-bottom:1.25rem;text-transform:uppercase}
+.mrow{margin-bottom:11px}
+.mrow label{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:4px}
+.mrow input,.mrow select,.mrow textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--white);font-family:var(--mono);font-size:11px;padding:7px 10px}
+.mrow input:focus,.mrow select:focus,.mrow textarea:focus{outline:none;border-color:var(--pink);box-shadow:0 0 5px rgba(255,79,163,0.2)}
+.mrow textarea{resize:vertical;min-height:60px}
+.mrow select option{background:var(--bg2)}
+.mpreview{font-family:var(--mono);font-size:10px;color:var(--pink);margin-top:6px}
+.mfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface2);border:1px solid var(--pink);color:var(--pink);font-family:var(--mono);font-size:10px;letter-spacing:1px;padding:9px 15px;border-radius:var(--r);z-index:600;box-shadow:var(--glow);transition:opacity .3s}
+
+/* BLINK */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.cursor{display:inline-block;width:7px;height:12px;background:var(--pink);margin-left:3px;animation:blink 1s infinite;vertical-align:middle}
+
+@media(max-width:768px){
+  .panels-grid,.charts-row,.totals-bar{grid-template-columns:1fr}
+  .li,.sub-li{grid-template-columns:1fr 70px 55px 70px 65px 22px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo-area">
+    <div class="logo-mark">
+      <div class="logo-num">212<span class="cursor"></span></div>
+      <div class="logo-sub">PROJECT 212</div>
+    </div>
+    <div class="header-info">
+      <h1>BUDGET PRÉVISIONNEL</h1>
+      <div class="tagline">212 SOMMETS &gt; 3000M — <span>SANGILIERS DES MONTAGNES</span></div>
+      <div class="last-save" id="last-save">— AUCUNE SAUVEGARDE</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost btn-sm" onclick="resetAll()">⟳ RESET</button>
+    <button class="btn btn-sm" onclick="exportPDF()">↓ PDF</button>
+    <button class="btn btn-sm" onclick="exportJPEG()">↓ JPEG</button>
+    <button class="btn btn-primary" onclick="saveData()">■ SAUVEGARDER</button>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('budget',this)">// BUDGET</button>
+  <button class="tab" onclick="switchTab('materiel',this)">// MATÉRIEL</button>
+  <button class="tab" onclick="switchTab('charts',this)">// GRAPHIQUES</button>
+</div>
+
+<!-- ══ TAB BUDGET ══ -->
+<div class="tab-content active" id="tab-budget">
+  <div class="totals-bar">
+    <div class="total-card rec">
+      <div class="tc-label">// TOTAL RECETTES</div>
+      <div class="tc-val" id="tot-rec">0 €</div>
+      <div class="tc-sub" id="tot-rec-n">0 ligne(s)</div>
+      <div class="prog-wrap"><div class="prog-track"><div class="prog-fill r" id="prog-r" style="width:0%"></div></div><div class="prog-lbl" id="prog-r-lbl">0%</div></div>
+    </div>
+    <div class="total-card dep">
+      <div class="tc-label">// TOTAL DÉPENSES</div>
+      <div class="tc-val" id="tot-dep">0 €</div>
+      <div class="tc-sub" id="tot-dep-n">0 ligne(s)</div>
+      <div class="prog-wrap"><div class="prog-track"><div class="prog-fill d" id="prog-d" style="width:0%"></div></div><div class="prog-lbl" id="prog-d-lbl">0%</div></div>
+    </div>
+    <div class="total-card sol">
+      <div class="tc-label">// SOLDE PRÉVISIONNEL</div>
+      <div class="tc-val" id="tot-sol">0 €</div>
+      <div class="tc-sub" id="tot-sol-sub">ÉQUILIBRÉ</div>
+    </div>
+  </div>
+
+  <div class="panels-grid" id="panels-grid">
+    <div class="panel rec" id="panel-rec">
+      <div class="panel-head">
+        <span class="panel-title">RECETTES</span>
+        <span class="panel-tot" id="ptot-rec">0 €</span>
+      </div>
+      <div id="rec-body"></div>
+      <div class="panel-foot"><button class="btn btn-sm btn-green" onclick="openAddSec('rec')">+ SECTION</button></div>
+    </div>
+    <div class="panel dep" id="panel-dep">
+      <div class="panel-head">
+        <span class="panel-title">DÉPENSES</span>
+        <span class="panel-tot" id="ptot-dep">0 €</span>
+      </div>
+      <div id="dep-body"></div>
+      <div class="panel-foot"><button class="btn btn-sm btn-red" onclick="openAddSec('dep')">+ SECTION</button></div>
+    </div>
+  </div>
+
+  <div class="sec-div">NOTES & HYPOTHÈSES</div>
+  <textarea class="notes-inp" id="notes" placeholder="// Notes, hypothèses, sources de financement..." oninput="saveData()"></textarea>
+</div>
+
+<!-- ══ TAB MATERIEL ══ -->
+<div class="tab-content" id="tab-materiel">
+  <div class="mat-head">
+    <div class="mat-title">// CHECKLIST MATÉRIEL</div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-green" onclick="openAddMat('owned')">+ POSSÉDÉ</button>
+      <button class="btn btn-sm btn-red" onclick="openAddMat('needed')">+ À ACQUÉRIR</button>
+      <button class="btn btn-sm" onclick="openAddMatCat()">+ CATÉGORIE</button>
+    </div>
+  </div>
+  <div class="mat-summary">
+    <div class="ms-card owned"><div class="ms-label">MATÉRIEL POSSÉDÉ</div><div class="ms-val" id="ms-owned">0</div></div>
+    <div class="ms-card needed"><div class="ms-label">À ACQUÉRIR</div><div class="ms-val" id="ms-needed">0</div></div>
+    <div class="ms-card cost"><div class="ms-label">COÛT TOTAL ACHAT</div><div class="ms-val" id="ms-cost">0 €</div></div>
+    <div class="ms-card" style="border-color:rgba(255,255,255,0.08)"><div class="ms-label">TOTAL ITEMS</div><div class="ms-val" style="color:var(--white)" id="ms-total">0</div></div>
+  </div>
+  <div class="mat-table-wrap"><div id="mat-table-content"></div></div>
+</div>
+
+<!-- ══ TAB CHARTS ══ -->
+<div class="tab-content" id="tab-charts">
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-card-title">RÉPARTITION GLOBALE</div>
+      <button class="chart-dl-btn" onclick="dlChart('ch-global')">↓ PNG</button>
+      <canvas id="ch-global"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-title">RECETTES PAR SECTION</div>
+      <button class="chart-dl-btn" onclick="dlChart('ch-rec')">↓ PNG</button>
+      <canvas id="ch-rec"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-title">DÉPENSES PAR SECTION</div>
+      <button class="chart-dl-btn" onclick="dlChart('ch-dep')">↓ PNG</button>
+      <canvas id="ch-dep"></canvas>
+    </div>
+  </div>
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-card-title">MATÉRIEL — POSSÉDÉ VS À ACQUÉRIR</div>
+      <button class="chart-dl-btn" onclick="dlChart('ch-mat')">↓ PNG</button>
+      <canvas id="ch-mat"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-title">COÛT MATÉRIEL PAR CATÉGORIE</div>
+      <button class="chart-dl-btn" onclick="dlChart('ch-mat-cat')">↓ PNG</button>
+      <canvas id="ch-mat-cat"></canvas>
+    </div>
+    <div class="chart-card" style="display:flex;align-items:center;justify-content:center">
+      <div style="text-align:center">
+        <div style="font-family:var(--display);font-size:28px;font-weight:900;color:var(--pink);text-shadow:var(--glow)" id="big-sol">0 €</div>
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--gray);margin-top:6px">SOLDE PRÉVISIONNEL</div>
+        <div style="font-family:var(--mono);font-size:10px;margin-top:8px" id="big-sol-lbl">ÉQUILIBRÉ</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<!-- ── MODAL SECTION ── -->
+<div class="modal-wrap" id="modal-sec" style="display:none">
+  <div class="modal">
+    <h3 id="msec-title">+ NOUVELLE SECTION</h3>
+    <div class="mrow"><label>Nom de la section</label><input type="text" id="m-sec-name" placeholder="ex: MATÉRIEL TECHNIQUE"></div>
+    <div class="mrow"><label>Type</label>
+      <select id="m-sec-type"><option value="simple">Simple (lignes directes)</option><option value="sub">Avec sous-sections</option></select>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-sec')">ANNULER</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmSec()">CRÉER</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL SOUS-SECTION ── -->
+<div class="modal-wrap" id="modal-sub" style="display:none">
+  <div class="modal">
+    <h3>+ SOUS-SECTION</h3>
+    <div class="mrow"><label>Nom</label><input type="text" id="m-sub-name" placeholder="ex: ÉQUIPE MÉDICALE"></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-sub')">ANNULER</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmSub()">CRÉER</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL MODIFIER LIGNE ── -->
+<div class="modal-wrap" id="modal-edit" style="display:none">
+  <div class="modal">
+    <h3>MODIFIER LA LIGNE</h3>
+    <div class="mrow"><label>Libellé</label><input type="text" id="me-lbl"></div>
+    <div class="mrow"><label>Quantité</label><input type="number" id="me-qty" step="0.5" min="0"></div>
+    <div class="mrow"><label>Prix unitaire (€)</label><input type="number" id="me-price" step="0.01" min="0"></div>
+    <div class="mrow"><label>Unité</label><input type="text" id="me-unit" placeholder="jours, forfait, unités..."></div>
+    <div class="mpreview">TOTAL : <span id="me-preview">0 €</span></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-edit')">ANNULER</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmEdit()">ENREGISTRER</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL MATÉRIEL ── -->
+<div class="modal-wrap" id="modal-mat" style="display:none">
+  <div class="modal">
+    <h3 id="mmat-title">+ MATÉRIEL</h3>
+    <div class="mrow"><label>Désignation *</label><input type="text" id="mm-lbl" placeholder="ex: Caméra Sony FX3"></div>
+    <div class="mrow"><label>Catégorie</label>
+      <select id="mm-cat"><option value="">Sélectionner...</option></select>
+    </div>
+    <div class="mrow"><label>Quantité</label><input type="number" id="mm-qty" value="1" min="1"></div>
+    <div class="mrow"><label>Statut</label>
+      <select id="mm-status"><option value="owned">Possédé ✓</option><option value="needed">À acquérir</option></select>
+    </div>
+    <div class="mrow"><label>Prix d'achat (€) — si à acquérir</label><input type="number" id="mm-price" value="0" min="0" step="0.01" placeholder="0"></div>
+    <div class="mrow"><label>Notes</label><textarea id="mm-notes" placeholder="Modèle, specs, priorité..."></textarea></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-mat')">ANNULER</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmMat()">ENREGISTRER</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL CATÉGORIE MATÉRIEL ── -->
+<div class="modal-wrap" id="modal-mat-cat" style="display:none">
+  <div class="modal">
+    <h3>+ CATÉGORIE MATÉRIEL</h3>
+    <div class="mrow"><label>Nom de la catégorie</label><input type="text" id="mmc-name" placeholder="ex: OPTIQUES"></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-mat-cat')">ANNULER</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmMatCat()">CRÉER</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" style="display:none"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDsSCMjr6sADW_2rJNIpUnDHKJjI3LRVBg",
+  authDomain: "budget-212.firebaseapp.com",
+  projectId: "budget-212",
+  storageBucket: "budget-212.firebasestorage.app",
+  messagingSenderId: "453799738814",
+  appId: "1:453799738814:web:750d07d8d0c586e7e58def"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+const DOC_ID = 'main'; // document unique pour ce budget
+
+// Expose les fonctions Firebase sur window pour le reste du script
+window._fb_saveToCloud = async (data) => {
+  try {
+    await setDoc(doc(db, 'budget212', DOC_ID), { payload: JSON.stringify(data), updatedAt: Date.now() });
+    return true;
+  } catch(e) { console.error('Firebase save error:', e); return false; }
+};
+
+window._fb_loadFromCloud = async () => {
+  try {
+    const snap = await getDoc(doc(db, 'budget212', DOC_ID));
+    if (snap.exists()) return JSON.parse(snap.data().payload);
+    return null;
+  } catch(e) { console.error('Firebase load error:', e); return null; }
+};
+
+// Écouter les changements en temps réel (multi-appareils)
+window._fb_subscribe = (callback) => {
+  return onSnapshot(doc(db, 'budget212', DOC_ID), (snap) => {
+    if (snap.exists()) {
+      try { callback(JSON.parse(snap.data().payload)); } catch(e) {}
+    }
+  });
+};
+
+// Signaler que Firebase est prêt
+window._fbReady = true;
+document.dispatchEvent(new Event('fbReady'));
+</script>
+<script>
+// ── STATE ─────────────────────────────────────────────────────────
+let D = { rec:[], dep:[], mat:[], matCats:[], notes:'' };
+let charts = {};
+let pending = {};
+
+const PINK='#FF4FA3', GREEN='#4ADE80', RED='#F87171', WHITE='#FFFFFF';
+const COLORS=['#FF4FA3','#00D4FF','#4ADE80','#F87171','#FFD700','#BF5FFF','#FF8C00','#00FFCC','#FF6699','#60A5FA'];
+
+// ── INIT ──────────────────────────────────────────────────────────
+let _fbUnsub = null;
+let _lastCloudUpdate = 0;
+
+async function init(){
+  // 1. Charger localStorage d'abord pour affichage immédiat
+  const s=localStorage.getItem('p212budget');
+  if(s){try{D=JSON.parse(s);}catch(e){}}
+  else loadDefaults();
+  G('notes').value=D.notes||'';
+  render();
+  updateSaveStatus('LOCAL');
+
+  // 2. Attendre Firebase puis charger le cloud
+  const doFbInit = async () => {
+    updateSaveStatus('CONNEXION...');
+    const cloudData = await window._fb_loadFromCloud();
+    if(cloudData){
+      // Comparer: prendre le plus récent
+      const localTs = D._updatedAt||0;
+      const cloudTs = cloudData._updatedAt||0;
+      if(cloudTs > localTs){
+        D = cloudData;
+        localStorage.setItem('p212budget', JSON.stringify(D));
+        G('notes').value = D.notes||'';
+        render();
+        toast('Données synchronisées depuis le cloud ☁');
+      }
+    }
+    // S'abonner aux mises à jour temps réel
+    if(_fbUnsub) _fbUnsub();
+    _fbUnsub = window._fb_subscribe((cloudData) => {
+      const cloudTs = cloudData._updatedAt||0;
+      const now = Date.now();
+      // Ignorer si c'est notre propre sauvegarde récente (< 3s)
+      if(now - _lastCloudUpdate < 3000) return;
+      const localTs = D._updatedAt||0;
+      if(cloudTs > localTs + 500){
+        D = cloudData;
+        localStorage.setItem('p212budget', JSON.stringify(D));
+        G('notes').value = D.notes||'';
+        render();
+        updateSaveStatus('SYNC ☁');
+        setTimeout(()=>updateSaveStatus('CLOUD ☁'), 2000);
+      }
+    });
+    updateSaveStatus('CLOUD ☁');
+  };
+
+  if(window._fbReady) doFbInit();
+  else document.addEventListener('fbReady', doFbInit, {once:true});
+}
+
+function updateSaveStatus(status){
+  const el = G('last-save');
+  if(!el) return;
+  const d = new Date();
+  el.textContent = `— ${status} — ${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
+}
+
+function loadDefaults(){
+  D={
+    notes:'// Budget prévisionnel — Project 212\n// Expédition prévue : été 2027',
+    matCats:['CAMÉRAS & OPTIQUES','SON','STABILISATION','ÉCLAIRAGE','ÉNERGIE & STOCKAGE','MONTAGNE & SÉCURITÉ','MÉDICAL','COMMUNICATION'],
+    mat:[
+      {id:'m1',lbl:'Sony FX3 Full Frame',cat:'CAMÉRAS & OPTIQUES',qty:1,status:'owned',price:0,notes:''},
+      {id:'m2',lbl:'Sony FX6',cat:'CAMÉRAS & OPTIQUES',qty:1,status:'needed',price:5500,notes:'Caméra principale B'},
+      {id:'m3',lbl:'GoPro Hero 12 Black',cat:'CAMÉRAS & OPTIQUES',qty:3,status:'needed',price:400,notes:'Action cams'},
+      {id:'m4',lbl:'Objectif 24-70mm f/2.8',cat:'CAMÉRAS & OPTIQUES',qty:1,status:'owned',price:0,notes:''},
+      {id:'m5',lbl:'Objectif 70-200mm f/2.8',cat:'CAMÉRAS & OPTIQUES',qty:1,status:'needed',price:2200,notes:'Téléobjectif'},
+      {id:'m6',lbl:'DJI Mavic 3 Cine',cat:'CAMÉRAS & OPTIQUES',qty:1,status:'needed',price:2800,notes:'Drone cinéma'},
+      {id:'m7',lbl:'Zoom H6 Essential',cat:'SON',qty:1,status:'owned',price:0,notes:''},
+      {id:'m8',lbl:'Rode Wireless PRO',cat:'SON',qty:2,status:'needed',price:600,notes:'Micros HF'},
+      {id:'m9',lbl:'DJI RS4 Pro',cat:'STABILISATION',qty:1,status:'needed',price:450,notes:'Gimbal'},
+      {id:'m10',lbl:'Batteries LP-E6NH x10',cat:'ÉNERGIE & STOCKAGE',qty:1,status:'needed',price:300,notes:''},
+      {id:'m11',lbl:'Cartes CFexpress 512Go x4',cat:'ÉNERGIE & STOCKAGE',qty:1,status:'needed',price:600,notes:''},
+      {id:'m12',lbl:'Panneau solaire portable',cat:'ÉNERGIE & STOCKAGE',qty:1,status:'needed',price:250,notes:'Autonomie terrain'},
+      {id:'m13',lbl:'Kit premiers secours avancé',cat:'MÉDICAL',qty:1,status:'needed',price:350,notes:''},
+      {id:'m14',lbl:'Défibrillateur portable',cat:'MÉDICAL',qty:1,status:'needed',price:1200,notes:'Obligatoire'},
+      {id:'m15',lbl:'Balise SPOT X',cat:'COMMUNICATION',qty:2,status:'needed',price:350,notes:'Géolocalisation'},
+      {id:'m16',lbl:'Talkie-walkies Pro x4',cat:'COMMUNICATION',qty:1,status:'needed',price:400,notes:''},
+      {id:'m17',lbl:'Crampons 10 pointes x6',cat:'MONTAGNE & SÉCURITÉ',qty:1,status:'owned',price:0,notes:''},
+      {id:'m18',lbl:'Piolets x4',cat:'MONTAGNE & SÉCURITÉ',qty:1,status:'owned',price:0,notes:''},
+      {id:'m19',lbl:'Cordes dynamiques x3',cat:'MONTAGNE & SÉCURITÉ',qty:1,status:'needed',price:450,notes:''},
+      {id:'m20',lbl:'Tentes légères x4',cat:'MONTAGNE & SÉCURITÉ',qty:1,status:'needed',price:1600,notes:'Tentes 3 saisons'},
+    ],
+    rec:[
+      {id:'r1',name:'SUBVENTIONS PUBLIQUES',type:'simple',open:true,items:[
+        {id:'ri1',lbl:'ALCA / Région Nouvelle-Aquitaine',qty:1,price:20000,unit:'forfait'},
+        {id:'ri2',lbl:'Région Occitanie',qty:1,price:15000,unit:'forfait'},
+        {id:'ri3',lbl:'FAI DOC — CNC (aide écriture)',qty:1,price:15000,unit:'forfait'},
+      ]},
+      {id:'r2',name:'MÉCÉNAT & SPONSORING',type:'simple',open:false,items:[
+        {id:'ri4',lbl:'Partenaires outdoor (Salomon, Petzl...)',qty:1,price:12000,unit:'forfait'},
+        {id:'ri5',lbl:'Fondations privées',qty:1,price:5000,unit:'forfait'},
+        {id:'ri6',lbl:'Partenaires médias & équipement',qty:1,price:5000,unit:'forfait'},
+      ]},
+      {id:'r3',name:'CROWDFUNDING',type:'simple',open:false,items:[
+        {id:'ri7',lbl:'Campagne Ulule / HelloAsso',qty:1,price:8000,unit:'objectif'},
+      ]},
+      {id:'r4',name:'APPORTS PROPRES',type:'simple',open:false,items:[
+        {id:'ri8',lbl:'Fonds propres association',qty:1,price:5000,unit:'forfait'},
+      ]},
+      {id:'r5',name:'VENTES & DROITS',type:'simple',open:false,items:[
+        {id:'ri9',lbl:'Vente droits diffusion (prévision)',qty:1,price:10000,unit:'estimation'},
+        {id:'ri10',lbl:'Merchandising (drops)',qty:1,price:3000,unit:'estimation'},
+      ]},
+    ],
+    dep:[
+      {id:'d1',name:'ÉQUIPE & RÉMUNÉRATIONS',type:'sub',open:true,items:[],subs:[
+        {id:'s1',name:'ÉQUIPE TECHNIQUE',open:true,items:[
+          {id:'di1',lbl:'Réalisateur / DA',qty:30,price:300,unit:'jours'},
+          {id:'di2',lbl:'Chef opérateur image',qty:30,price:280,unit:'jours'},
+          {id:'di3',lbl:'Cadreur 2',qty:20,price:200,unit:'jours'},
+          {id:'di4',lbl:'Ingénieur du son',qty:15,price:220,unit:'jours'},
+          {id:'di5',lbl:'Monteur',qty:20,price:250,unit:'jours'},
+        ]},
+        {id:'s2',name:'ÉQUIPE MÉDICALE',open:false,items:[
+          {id:'di6',lbl:'Médecin de montagne',qty:30,price:350,unit:'jours'},
+          {id:'di7',lbl:'Infirmier secouriste',qty:30,price:200,unit:'jours'},
+        ]},
+        {id:'s3',name:'ORGANISATION & LOGISTIQUE',open:false,items:[
+          {id:'di8',lbl:'Responsable logistique',qty:35,price:200,unit:'jours'},
+          {id:'di9',lbl:'Coordinateur terrain',qty:30,price:180,unit:'jours'},
+        ]},
+        {id:'s4',name:'ACCOMPAGNATEURS SPORTIFS',open:false,items:[
+          {id:'di10',lbl:'Guide haute montagne',qty:20,price:250,unit:'jours'},
+        ]},
+      ]},
+      {id:'d2',name:'MATÉRIEL TECHNIQUE',type:'simple',open:false,items:[
+        {id:'di11',lbl:'Caméras (location)',qty:2,price:1500,unit:'mois'},
+        {id:'di12',lbl:'Optiques & accessoires',qty:1,price:2000,unit:'forfait'},
+        {id:'di13',lbl:'Drone cinéma',qty:1,price:3000,unit:'mois'},
+        {id:'di14',lbl:'Son & HF',qty:1,price:800,unit:'mois'},
+        {id:'di15',lbl:'Énergie & stockage',qty:1,price:900,unit:'forfait'},
+      ]},
+      {id:'d3',name:'LOGISTIQUE MONTAGNE',type:'simple',open:false,items:[
+        {id:'di16',lbl:'Bivouacs & refuges',qty:30,price:80,unit:'nuits'},
+        {id:'di17',lbl:'Transport & navettes',qty:1,price:3000,unit:'forfait'},
+        {id:'di18',lbl:'Équipement montagne équipe',qty:1,price:2500,unit:'forfait'},
+        {id:'di19',lbl:'Ravitaillement alimentaire',qty:30,price:150,unit:'jours'},
+      ]},
+      {id:'d4',name:'MÉDICAL & SÉCURITÉ',type:'simple',open:false,items:[
+        {id:'di20',lbl:'Matériel premiers secours',qty:1,price:1500,unit:'forfait'},
+        {id:'di21',lbl:'Assurance expédition',qty:1,price:2000,unit:'forfait'},
+        {id:'di22',lbl:'Évacuation héliportée (provision)',qty:1,price:1500,unit:'provision'},
+      ]},
+      {id:'d5',name:'POST-PRODUCTION',type:'simple',open:false,items:[
+        {id:'di23',lbl:'Montage image',qty:1,price:8000,unit:'forfait'},
+        {id:'di24',lbl:'Mixage son',qty:1,price:2500,unit:'forfait'},
+        {id:'di25',lbl:'Étalonnage',qty:1,price:2000,unit:'forfait'},
+        {id:'di26',lbl:'Sous-titrage & DCP',qty:1,price:1500,unit:'forfait'},
+      ]},
+      {id:'d6',name:'COMMUNICATION',type:'simple',open:false,items:[
+        {id:'di27',lbl:'Site / teaser / réseaux',qty:1,price:1500,unit:'forfait'},
+        {id:'di28',lbl:'Inscriptions festivals',qty:6,price:80,unit:'festivals'},
+      ]},
+      {id:'d7',name:'FRAIS GÉNÉRAUX',type:'simple',open:false,items:[
+        {id:'di29',lbl:'Frais bancaires & administratifs',qty:1,price:500,unit:'forfait'},
+        {id:'di30',lbl:'Assurance production',qty:1,price:1200,unit:'forfait'},
+      ]},
+    ]
+  };
+}
+
+// ── RENDER ────────────────────────────────────────────────────────
+function render(){
+  renderPanel('rec'); renderPanel('dep');
+  renderMat(); renderCharts(); updateTotals();
+}
+
+function renderPanel(side){
+  const el=G(side+'-body');
+  el.innerHTML=D[side].map(s=>renderSec(s,side)).join('');
+}
+
+function renderSec(s,side){
+  const tot=secTot(s);
+  const open=s.open!==false;
+  if(s.type==='sub'){
+    const subsHTML=(s.subs||[]).map(sub=>{
+      const st=subTot(sub);
+      const so=sub.open!==false;
+      return `<div class="subsec">
+        <button class="sub-head" onclick="toggleSub('${side}','${s.id}','${sub.id}')">
+          <span class="sub-arr ${so?'open':''}">▶</span>
+          <span class="sub-name">${sub.name}</span>
+          <span class="sub-tot">${fmt(st)}</span>
+          <button class="btn btn-xs btn-ghost" style="margin-left:6px" onclick="event.stopPropagation();openEditSub('${side}','${s.id}','${sub.id}')">✏</button>
+          <button class="btn btn-xs" style="margin-left:4px;border-color:rgba(248,113,113,.3);color:var(--red);background:var(--red-dim)" onclick="event.stopPropagation();delSub('${side}','${s.id}','${sub.id}')">✕</button>
+        </button>
+        <div class="sub-items ${so?'open':''}" id="sub-${sub.id}">
+          ${(sub.items||[]).map(it=>renderSubLi(it,side,s.id,sub.id)).join('')}
+          ${addRowHTML(sub.id)}
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="bsec" id="bs-${s.id}">
+      <button class="sec-head" onclick="toggleSec('${side}','${s.id}')">
+        <span class="sec-name">${s.name}</span>
+        <span class="sec-tot">${fmt(tot)}</span>
+        <button class="btn btn-xs btn-ghost" style="margin-left:8px" onclick="event.stopPropagation();openEditSecName('${side}','${s.id}')">✏</button>
+        <button class="btn btn-xs btn-ghost" onclick="event.stopPropagation();openAddSub('${side}','${s.id}')">+ SUB</button>
+        <button class="btn btn-xs" style="margin-left:4px;border-color:rgba(248,113,113,.3);color:var(--red);background:var(--red-dim)" onclick="event.stopPropagation();delSec('${side}','${s.id}')">✕</button>
+        <span class="sec-arr ${open?'open':''}">▶</span>
+      </button>
+      <div class="sec-items ${open?'open':''}" id="si-${s.id}">${subsHTML}</div>
+    </div>`;
+  } else {
+    return `<div class="bsec" id="bs-${s.id}">
+      <button class="sec-head" onclick="toggleSec('${side}','${s.id}')">
+        <span class="sec-name">${s.name}</span>
+        <span class="sec-tot">${fmt(tot)}</span>
+        <button class="btn btn-xs btn-ghost" style="margin-left:8px" onclick="event.stopPropagation();openEditSecName('${side}','${s.id}')">✏</button>
+        <button class="btn btn-xs" style="margin-left:4px;border-color:rgba(248,113,113,.3);color:var(--red);background:var(--red-dim)" onclick="event.stopPropagation();delSec('${side}','${s.id}')">✕</button>
+        <span class="sec-arr ${open?'open':''}">▶</span>
+      </button>
+      <div class="sec-items ${open?'open':''}" id="si-${s.id}">
+        ${(s.items||[]).map(it=>renderLi(it,side,s.id)).join('')}
+        ${addRowHTML(s.id)}
+      </div>
+    </div>`;
+  }
+}
+
+function renderLi(it,side,secId){
+  return `<div class="li" id="li-${it.id}">
+    <span class="li-lbl">${esc(it.lbl)}</span>
+    <input class="li-inp" type="number" value="${it.qty}" min="0" step="0.5" onchange="updItem('${side}','${secId}',null,'${it.id}','qty',this.value)" title="Qté">
+    <span class="li-unit">${esc(it.unit||'')}</span>
+    <input class="li-inp" type="number" value="${it.price}" min="0" step="0.01" onchange="updItem('${side}','${secId}',null,'${it.id}','price',this.value)" title="Prix €">
+    <span class="li-tot">${fmt(it.qty*it.price)}</span>
+    <div style="display:flex;gap:2px">
+      <button class="li-del" onclick="openEditLine('${side}','${secId}',null,'${it.id}')" title="Modifier" style="color:var(--pink2);opacity:0">✏</button>
+      <button class="li-del" onclick="delLine('${side}','${secId}',null,'${it.id}')" title="Supprimer">✕</button>
+    </div>
+  </div>`;
+}
+
+function renderSubLi(it,side,secId,subId){
+  return `<div class="sub-li li" id="li-${it.id}">
+    <span class="li-lbl">${esc(it.lbl)}</span>
+    <input class="li-inp" type="number" value="${it.qty}" min="0" step="0.5" onchange="updItem('${side}','${secId}','${subId}','${it.id}','qty',this.value)" title="Qté">
+    <span class="li-unit">${esc(it.unit||'')}</span>
+    <input class="li-inp" type="number" value="${it.price}" min="0" step="0.01" onchange="updItem('${side}','${secId}','${subId}','${it.id}','price',this.value)" title="Prix €">
+    <span class="li-tot">${fmt(it.qty*it.price)}</span>
+    <div style="display:flex;gap:2px">
+      <button class="li-del" onclick="openEditLine('${side}','${secId}','${subId}','${it.id}')" title="Modifier" style="color:var(--pink2);opacity:0">✏</button>
+      <button class="li-del" onclick="delLine('${side}','${secId}','${subId}','${it.id}')" title="Supprimer">✕</button>
+    </div>
+  </div>`;
+}
+
+function addRowHTML(targetId){
+  return `<div class="add-row">
+    <input class="add-inp lbl" id="al-${targetId}" placeholder="Libellé...">
+    <input class="add-inp num" id="aq-${targetId}" placeholder="Qté" value="1" type="number">
+    <input class="add-inp unt" id="au-${targetId}" placeholder="Unité">
+    <input class="add-inp num" id="ap-${targetId}" placeholder="Prix€" type="number">
+    <button class="btn btn-sm" onclick="quickAdd(event,'${targetId}')">+ ADD</button>
+  </div>`;
+}
+
+// ── MATÉRIEL ──────────────────────────────────────────────────────
+function renderMat(){
+  const cats = D.matCats||[];
+  const items = D.mat||[];
+  let owned=0,needed=0,cost=0;
+  items.forEach(m=>{
+    if(m.status==='owned') owned++;
+    else { needed++; cost+=Number(m.price||0)*Number(m.qty||1); }
+  });
+  G('ms-owned').textContent=owned;
+  G('ms-needed').textContent=needed;
+  G('ms-cost').textContent=fmt(cost);
+  G('ms-total').textContent=items.length;
+
+  let html='';
+  cats.forEach(cat=>{
+    const catItems=items.filter(m=>m.cat===cat);
+    if(catItems.length===0) return;
+    const catCost=catItems.filter(m=>m.status==='needed').reduce((s,m)=>s+Number(m.price||0)*Number(m.qty||1),0);
+    html+=`<div class="mat-section-label">
+      <span>// ${cat}</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        ${catCost>0?`<span class="mat-cat-total">${fmt(catCost)} à acquérir</span>`:''}
+        <button class="btn btn-xs btn-ghost" onclick="delMatCat('${cat}')">✕ CAT</button>
+      </div>
+    </div>
+    <table class="mat-table">
+      <thead><tr><th>DÉSIGNATION</th><th>CAT.</th><th>QTÉ</th><th>STATUT</th><th>PRIX ACHAT</th><th>TOTAL</th><th>NOTES</th><th></th></tr></thead>
+      <tbody>
+        ${catItems.map(m=>`<tr id="mtr-${m.id}">
+          <td><input class="mat-inp w-lbl" value="${esc(m.lbl)}" onchange="updMat('${m.id}','lbl',this.value)"></td>
+          <td><select class="mat-inp w-cat" onchange="updMat('${m.id}','cat',this.value)">
+            ${cats.map(c=>`<option value="${c}"${c===m.cat?' selected':''}>${c}</option>`).join('')}
+          </select></td>
+          <td><input class="mat-inp w-num" type="number" value="${m.qty||1}" min="1" onchange="updMat('${m.id}','qty',this.value)" style="width:55px"></td>
+          <td>
+            <button class="status-btn ${m.status}" onclick="toggleMatStatus('${m.id}')">${m.status==='owned'?'POSSÉDÉ':'À ACQUÉRIR'}</button>
+          </td>
+          <td><input class="mat-inp w-num" type="number" value="${m.price||0}" min="0" step="0.01" onchange="updMat('${m.id}','price',this.value)" ${m.status==='owned'?'disabled style="opacity:.3"':''}></td>
+          <td style="font-family:var(--mono);font-size:11px;color:${m.status==='needed'?'var(--red)':'var(--green)'}">${m.status==='needed'?fmt(Number(m.price||0)*Number(m.qty||1)):'—'}</td>
+          <td><input class="mat-inp" value="${esc(m.notes||'')}" style="width:120px" placeholder="Notes..." onchange="updMat('${m.id}','notes',this.value)"></td>
+          <td>
+            <button class="del-btn" onclick="delMat('${m.id}')" title="Supprimer">✕</button>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+  });
+
+  // Items sans catégorie
+  const noCat=items.filter(m=>!cats.includes(m.cat));
+  if(noCat.length>0){
+    html+=`<div class="mat-section-label"><span>// SANS CATÉGORIE</span></div>
+    <table class="mat-table"><thead><tr><th>DÉSIGNATION</th><th>QTÉ</th><th>STATUT</th><th>PRIX</th><th>TOTAL</th><th></th></tr></thead><tbody>
+      ${noCat.map(m=>`<tr><td><input class="mat-inp w-lbl" value="${esc(m.lbl)}" onchange="updMat('${m.id}','lbl',this.value)"></td>
+        <td><input class="mat-inp w-num" type="number" value="${m.qty||1}" style="width:55px" onchange="updMat('${m.id}','qty',this.value)"></td>
+        <td><button class="status-btn ${m.status}" onclick="toggleMatStatus('${m.id}')">${m.status==='owned'?'POSSÉDÉ':'À ACQUÉRIR'}</button></td>
+        <td><input class="mat-inp w-num" type="number" value="${m.price||0}" onchange="updMat('${m.id}','price',this.value)"></td>
+        <td style="font-family:var(--mono);font-size:11px;color:${m.status==='needed'?'var(--red)':'var(--green)'}">${m.status==='needed'?fmt(Number(m.price||0)*Number(m.qty||1)):'—'}</td>
+        <td><button class="del-btn" onclick="delMat('${m.id}')">✕</button></td>
+      </tr>`).join('')}
+    </tbody></table>`;
+  }
+
+  G('mat-table-content').innerHTML=html||'<div style="padding:2rem;text-align:center;font-family:var(--mono);font-size:11px;color:var(--gray2)">Aucun matériel — ajoutez des items via les boutons ci-dessus</div>';
+}
+
+// ── CALCULS ───────────────────────────────────────────────────────
+function secTot(s){
+  if(s.type==='sub') return (s.subs||[]).reduce((a,sub)=>a+subTot(sub),0);
+  return (s.items||[]).reduce((a,i)=>a+i.qty*i.price,0);
+}
+function subTot(sub){return (sub.items||[]).reduce((a,i)=>a+i.qty*i.price,0);}
+function panelTot(side){return D[side].reduce((a,s)=>a+secTot(s),0);}
+function countItems(side){return D[side].reduce((a,s)=>a+(s.type==='sub'?(s.subs||[]).reduce((b,sub)=>b+(sub.items||[]).length,0):(s.items||[]).length),0);}
+
+function updateTotals(){
+  const r=panelTot('rec'),d=panelTot('dep'),sol=r-d,grand=r+d;
+  G('tot-rec').textContent=fmt(r); G('tot-dep').textContent=fmt(d);
+  G('tot-sol').textContent=fmt(sol);
+  G('ptot-rec').textContent=fmt(r); G('ptot-dep').textContent=fmt(d);
+  G('tot-rec-n').textContent=countItems('rec')+' ligne(s)';
+  G('tot-dep-n').textContent=countItems('dep')+' ligne(s)';
+  G('tot-sol-sub').textContent=sol>0?'▲ EXCÉDENT':sol<0?'▼ DÉFICIT':'ÉQUILIBRÉ';
+  G('tot-sol-sub').style.color=sol>0?GREEN:sol<0?RED:PINK;
+  G('prog-r').style.width=grand>0?(r/grand*100)+'%':'50%';
+  G('prog-d').style.width=grand>0?(d/grand*100)+'%':'50%';
+  G('prog-r-lbl').textContent=grand>0?Math.round(r/grand*100)+'% du total':'—';
+  G('prog-d-lbl').textContent=grand>0?Math.round(d/grand*100)+'% du total':'—';
+  const bs=G('big-sol'),bl=G('big-sol-lbl');
+  if(bs){bs.textContent=fmt(sol);bs.style.color=sol>0?GREEN:sol<0?RED:PINK;}
+  if(bl){bl.textContent=sol>0?'▲ EXCÉDENT':sol<0?'▼ DÉFICIT':'ÉQUILIBRÉ';bl.style.color=sol>0?GREEN:sol<0?RED:PINK;}
+}
+
+// ── ACTIONS BUDGET ────────────────────────────────────────────────
+function getItems(side,secId,subId){
+  const s=D[side].find(x=>x.id===secId);
+  if(subId){const sub=(s?.subs||[]).find(x=>x.id===subId);return sub?.items;}
+  return s?.items;
+}
+function updItem(side,secId,subId,itemId,field,val){
+  const items=getItems(side,secId,subId);
+  const it=items?.find(i=>i.id===itemId);
+  if(it){it[field]=parseFloat(val)||0;}
+  const li=G('li-'+itemId);
+  if(li){const tots=li.querySelectorAll('.li-tot');if(tots[0])tots[0].textContent=fmt(it?.qty*it?.price||0);}
+  updateSecTotals(side); updateTotals(); renderCharts(); saveData();
+}
+function updateSecTotals(side){
+  D[side].forEach(s=>{
+    const el=document.querySelector(`#bs-${s.id} .sec-tot`);
+    if(el)el.textContent=fmt(secTot(s));
+    if(s.type==='sub')(s.subs||[]).forEach(sub=>{
+      const sel=document.querySelector(`#sub-${sub.id}`)?.parentElement?.querySelector('.sub-tot');
+      if(sel)sel.textContent=fmt(subTot(sub));
+    });
+  });
+}
+function delLine(side,secId,subId,itemId){
+  if(!confirm('Supprimer cette ligne ?'))return;
+  const items=getItems(side,secId,subId);
+  if(items){const idx=items.findIndex(i=>i.id===itemId);if(idx>-1)items.splice(idx,1);}
+  renderPanel(side); updateTotals(); renderCharts(); saveData();
+}
+function openEditLine(side,secId,subId,itemId){
+  const items=getItems(side,secId,subId);
+  const it=items?.find(i=>i.id===itemId); if(!it)return;
+  pending={type:'editLine',side,secId,subId,itemId};
+  G('me-lbl').value=it.lbl; G('me-qty').value=it.qty; G('me-price').value=it.price; G('me-unit').value=it.unit||'';
+  updEditPreview();
+  G('modal-edit').style.display='flex';
+}
+function updEditPreview(){const q=parseFloat(G('me-qty').value)||0,p=parseFloat(G('me-price').value)||0;G('me-preview').textContent=fmt(q*p);}
+G('me-qty').oninput=updEditPreview; G('me-price').oninput=updEditPreview;
+function confirmEdit(){
+  const {side,secId,subId,itemId}=pending;
+  const items=getItems(side,secId,subId);
+  const it=items?.find(i=>i.id===itemId); if(!it)return;
+  it.lbl=G('me-lbl').value.trim()||it.lbl;
+  it.qty=parseFloat(G('me-qty').value)||0;
+  it.price=parseFloat(G('me-price').value)||0;
+  it.unit=G('me-unit').value.trim();
+  closeModal('modal-edit'); renderPanel(side); updateTotals(); renderCharts(); saveData();
+  toast('Ligne modifiée');
+}
+function quickAdd(e,targetId){
+  e.stopPropagation();
+  const lbl=V('al-'+targetId)?.trim(); if(!lbl){toast('Libellé requis');return;}
+  const qty=parseFloat(V('aq-'+targetId))||1;
+  const price=parseFloat(V('ap-'+targetId))||0;
+  const unit=V('au-'+targetId)?.trim();
+  const newIt={id:'i'+Date.now(),lbl,qty,price,unit};
+  // Trouver où ajouter
+  let found=false;
+  ['rec','dep'].forEach(side=>{
+    D[side].forEach(s=>{
+      if(s.id===targetId){s.items.push(newIt);found=true;}
+      (s.subs||[]).forEach(sub=>{if(sub.id===targetId){sub.items.push(newIt);found=true;}});
+    });
+  });
+  if(found){render();saveData();}
+}
+function toggleSec(side,secId){const s=D[side].find(x=>x.id===secId);if(s)s.open=!s.open;renderPanel(side);saveData();}
+function toggleSub(side,secId,subId){const s=D[side].find(x=>x.id===secId);const sub=(s?.subs||[]).find(x=>x.id===subId);if(sub)sub.open=!sub.open;renderPanel(side);saveData();}
+function delSec(side,secId){if(!confirm('Supprimer cette section ?'))return;D[side]=D[side].filter(s=>s.id!==secId);renderPanel(side);updateTotals();renderCharts();saveData();}
+function delSub(side,secId,subId){if(!confirm('Supprimer cette sous-section ?'))return;const s=D[side].find(x=>x.id===secId);if(s)s.subs=s.subs.filter(x=>x.id!==subId);renderPanel(side);updateTotals();renderCharts();saveData();}
+
+// ── MODAL SECTION ─────────────────────────────────────────────────
+function openAddSec(side){pending={type:'addSec',side};G('msec-title').textContent='+ NOUVELLE SECTION';G('m-sec-name').value='';G('modal-sec').style.display='flex';setTimeout(()=>G('m-sec-name').focus(),80);}
+function openEditSecName(side,secId){
+  const s=D[side].find(x=>x.id===secId); if(!s)return;
+  pending={type:'editSec',side,secId};
+  G('msec-title').textContent='RENOMMER LA SECTION';
+  G('m-sec-name').value=s.name;
+  G('m-sec-type').value=s.type;
+  G('modal-sec').style.display='flex';
+  setTimeout(()=>G('m-sec-name').focus(),80);
+}
+function confirmSec(){
+  const name=G('m-sec-name').value.trim().toUpperCase(); if(!name){toast('Nom requis');return;}
+  if(pending.type==='editSec'){
+    const s=D[pending.side].find(x=>x.id===pending.secId);
+    if(s)s.name=name;
+  } else {
+    D[pending.side].push({id:'s'+Date.now(),name,type:G('m-sec-type').value,open:true,items:[],subs:[]});
+  }
+  closeModal('modal-sec'); renderPanel(pending.side); updateTotals(); saveData(); toast(pending.type==='editSec'?'Section renommée':'Section créée');
+}
+function openAddSub(side,secId){pending={type:'addSub',side,secId};G('m-sub-name').value='';G('modal-sub').style.display='flex';setTimeout(()=>G('m-sub-name').focus(),80);}
+function openEditSub(side,secId,subId){
+  const s=D[side].find(x=>x.id===secId);
+  const sub=(s?.subs||[]).find(x=>x.id===subId); if(!sub)return;
+  pending={type:'editSub',side,secId,subId};
+  G('m-sub-name').value=sub.name;
+  G('modal-sub').style.display='flex';
+  setTimeout(()=>G('m-sub-name').focus(),80);
+}
+function confirmSub(){
+  const name=G('m-sub-name').value.trim().toUpperCase(); if(!name){toast('Nom requis');return;}
+  const s=D[pending.side].find(x=>x.id===pending.secId);
+  if(pending.type==='editSub'){
+    const sub=(s?.subs||[]).find(x=>x.id===pending.subId);
+    if(sub)sub.name=name;
+  } else {
+    if(!s.subs)s.subs=[];
+    s.subs.push({id:'sub'+Date.now(),name,open:true,items:[]});
+  }
+  closeModal('modal-sub'); renderPanel(pending.side); saveData(); toast(pending.type==='editSub'?'Sous-section renommée':'Sous-section créée');
+}
+
+// ── ACTIONS MATÉRIEL ──────────────────────────────────────────────
+function updMatCatSelect(){G('mm-cat').innerHTML=`<option value="">Sélectionner...</option>`+(D.matCats||[]).map(c=>`<option value="${c}">${c}</option>`).join('');}
+function openAddMat(status){pending={type:'addMat',editId:null};updMatCatSelect();G('mmat-title').textContent='+ MATÉRIEL';G('mm-lbl').value='';G('mm-qty').value='1';G('mm-status').value=status;G('mm-price').value='0';G('mm-notes').value='';G('modal-mat').style.display='flex';setTimeout(()=>G('mm-lbl').focus(),80);}
+function confirmMat(){
+  const lbl=G('mm-lbl').value.trim(); if(!lbl){toast('Désignation requise');return;}
+  const item={id:pending.editId||'m'+Date.now(),lbl,cat:G('mm-cat').value,qty:parseInt(G('mm-qty').value)||1,status:G('mm-status').value,price:parseFloat(G('mm-price').value)||0,notes:G('mm-notes').value.trim()};
+  if(pending.editId){const idx=D.mat.findIndex(m=>m.id===pending.editId);if(idx>-1)D.mat[idx]=item;}
+  else D.mat.push(item);
+  closeModal('modal-mat'); renderMat(); renderCharts(); saveData(); toast('Matériel enregistré');
+}
+function updMat(id,field,val){
+  const m=D.mat.find(x=>x.id===id); if(!m)return;
+  if(['qty','price'].includes(field))m[field]=parseFloat(val)||0; else m[field]=val;
+  // Mettre à jour la cellule total sans re-render complet
+  const row=G('mtr-'+id);
+  if(row){
+    const tots=row.querySelectorAll('td');
+    if(tots[5]){
+      tots[5].textContent=m.status==='needed'?fmt(Number(m.price||0)*Number(m.qty||1)):'—';
+      tots[5].style.color=m.status==='needed'?'var(--red)':'var(--green)';
+    }
+    // Mettre à jour le champ prix si changement de statut
+    const priceInp=row.querySelector('input[type="number"]:nth-of-type(3)');
+    if(priceInp&&field==='status'){priceInp.disabled=val==='owned';priceInp.style.opacity=val==='owned'?'.3':'1';}
+  }
+  renderMat(); renderCharts(); saveData();
+}
+function toggleMatStatus(id){const m=D.mat.find(x=>x.id===id);if(m){m.status=m.status==='owned'?'needed':'owned';if(m.status==='owned')m.price=0;renderMat();renderCharts();saveData();}}
+function delMat(id){if(!confirm('Supprimer ?'))return;D.mat=D.mat.filter(m=>m.id!==id);renderMat();renderCharts();saveData();}
+function openAddMatCat(){G('mmc-name').value='';G('modal-mat-cat').style.display='flex';setTimeout(()=>G('mmc-name').focus(),80);}
+function confirmMatCat(){const name=G('mmc-name').value.trim().toUpperCase();if(!name){toast('Nom requis');return;}if(D.matCats.includes(name)){toast('Catégorie déjà existante');return;}D.matCats.push(name);closeModal('modal-mat-cat');renderMat();saveData();toast('Catégorie créée');}
+function delMatCat(cat){if(!confirm(`Supprimer la catégorie "${cat}" ?\nLes items ne seront pas supprimés.`))return;D.matCats=D.matCats.filter(c=>c!==cat);renderMat();saveData();}
+
+// ── CHARTS ────────────────────────────────────────────────────────
+function renderCharts(){
+  const r=panelTot('rec'),d=panelTot('dep');
+  mkC('ch-global','doughnut',{labels:['Recettes','Dépenses'],datasets:[{data:[Math.round(r),Math.round(d)],backgroundColor:[GREEN+'88',RED+'88'],borderColor:[GREEN,RED],borderWidth:2,hoverOffset:6}]});
+  const rSecs=D.rec.map(s=>({n:s.name,v:secTot(s)})).filter(s=>s.v>0);
+  mkC('ch-rec','doughnut',{labels:rSecs.map(s=>s.n),datasets:[{data:rSecs.map(s=>Math.round(s.v)),backgroundColor:COLORS.map(c=>c+'88'),borderColor:COLORS,borderWidth:1,hoverOffset:4}]});
+  const dSecs=D.dep.map(s=>({n:s.name,v:secTot(s)})).filter(s=>s.v>0);
+  mkC('ch-dep','doughnut',{labels:dSecs.map(s=>s.n),datasets:[{data:dSecs.map(s=>Math.round(s.v)),backgroundColor:COLORS.map(c=>c+'88'),borderColor:COLORS,borderWidth:1,hoverOffset:4}]});
+  const owned=D.mat.filter(m=>m.status==='owned').length,needed=D.mat.filter(m=>m.status==='needed').length;
+  mkC('ch-mat','doughnut',{labels:['Possédé','À acquérir'],datasets:[{data:[owned,needed],backgroundColor:[GREEN+'88',RED+'88'],borderColor:[GREEN,RED],borderWidth:2,hoverOffset:6}]});
+  const matCatCosts={};
+  D.mat.filter(m=>m.status==='needed').forEach(m=>{const k=m.cat||'Autre';matCatCosts[k]=(matCatCosts[k]||0)+Number(m.price||0)*Number(m.qty||1);});
+  const mce=Object.entries(matCatCosts).sort((a,b)=>b[1]-a[1]);
+  mkC('ch-mat-cat','bar',{labels:mce.map(([k])=>k.length>12?k.slice(0,11)+'…':k),datasets:[{label:'Coût',data:mce.map(([,v])=>Math.round(v)),backgroundColor:PINK+'88',borderColor:PINK,borderWidth:1,borderRadius:3}]},{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtS(v),font:{size:9},color:'#888'},grid:{color:'rgba(255,255,255,0.04)'}},x:{ticks:{font:{size:8},color:'#888'},grid:{display:false}}}});
+}
+
+function mkC(id,type,data,opts={}){
+  if(charts[id]){charts[id].destroy();delete charts[id];}
+  const canvas=G(id);if(!canvas)return;
+  Chart.defaults.color='#888';
+  const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:9},boxWidth:10,padding:8,color:'#888'}},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.raw)}}}};
+  charts[id]=new Chart(canvas.getContext('2d'),{type,data,options:{...base,...opts,plugins:{...base.plugins,...(opts.plugins||{})}}});
+}
+
+function dlChart(id){const c=G(id);if(!c)return;const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=id+'.png';a.click();toast('PNG téléchargé');}
+
+// ── SAVE / EXPORT ─────────────────────────────────────────────────
+function saveData(){
+  D.notes=G('notes')?.value||'';
+  D._updatedAt = Date.now();
+  localStorage.setItem('p212budget',JSON.stringify(D));
+  updateSaveStatus('SAUVEGARDE...');
+  if(window._fb_saveToCloud){
+    _lastCloudUpdate = Date.now();
+    window._fb_saveToCloud(D).then(ok=>{
+      updateSaveStatus(ok ? 'CLOUD ☁' : 'LOCAL SEUL');
+    });
+  } else {
+    updateSaveStatus('LOCAL');
+  }
+}
+function resetAll(){
+  if(!confirm('Réinitialiser toutes les données ? Cette action supprime aussi les données cloud.'))return;
+  localStorage.removeItem('p212budget');
+  if(window._fb_saveToCloud){
+    const empty = {}; empty._updatedAt = Date.now();
+    window._fb_saveToCloud(empty).then(()=>location.reload());
+  } else location.reload();
+}
+
+async function exportJPEG(){
+  toast('Capture...');
+  try{
+    const c=await html2canvas(document.querySelector('.wrap'),{backgroundColor:'#0D0D0D',scale:2,useCORS:true,logging:false});
+    const a=document.createElement('a');a.href=c.toDataURL('image/jpeg',0.92);a.download='project212-budget-'+new Date().toISOString().slice(0,10)+'.jpg';a.click();
+    toast('JPEG téléchargé');
+  }catch(e){toast('Erreur: '+e.message);}
+}
+
+async function exportPDF(){
+  toast('Génération PDF...');
+  try{
+    const r=panelTot('rec'),d=panelTot('dep'),sol=r-d;
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const W=210,M=14;
+    const setBg=()=>{pdf.setFillColor(13,13,13);pdf.rect(0,0,W,297,'F');};
+    setBg();
+    // Header
+    pdf.setFont('helvetica','bold');pdf.setFontSize(20);pdf.setTextColor(255,79,163);
+    pdf.text('212',M,22);
+    pdf.setFontSize(8);pdf.setTextColor(136,136,136);
+    pdf.text('PROJECT 212 — BUDGET PRÉVISIONNEL',M+18,18);
+    pdf.text('212 SOMMETS > 3000M — SANGILIERS DES MONTAGNES',M+18,24);
+    pdf.text('Généré le '+new Date().toLocaleDateString('fr-FR'),M+18,30);
+    pdf.setDrawColor(255,79,163);pdf.setLineWidth(0.4);pdf.line(M,34,W-M,34);
+    // Totaux
+    let y=43;
+    [[fmt(r),'RECETTES',[74,222,128]],[fmt(d),'DÉPENSES',[248,113,113]],[fmt(sol),'SOLDE',sol>=0?[74,222,128]:[248,113,113]]].forEach(([v,lbl,col],i)=>{
+      const x=M+i*(W-2*M)/3+1;
+      pdf.setFillColor(20,20,20);pdf.rect(x,y-6,60,14,'F');
+      pdf.setFontSize(7);pdf.setTextColor(136,136,136);pdf.text(lbl,x+1,y-1);
+      pdf.setFontSize(13);pdf.setFont('helvetica','bold');pdf.setTextColor(...col);pdf.text(v,x+1,y+6);
+    });
+    y+=22;
+    const drawPanel=(side,title,col)=>{
+      pdf.setFillColor(20,20,20);pdf.rect(M,y-4,W-2*M,8,'F');
+      pdf.setFont('helvetica','bold');pdf.setFontSize(9);pdf.setTextColor(...col);
+      pdf.text('// '+title,M+2,y+1);
+      pdf.setFontSize(9);pdf.setTextColor(200,200,200);pdf.text(fmt(panelTot(side)),W-M-2,y+1,{align:'right'});
+      y+=11;
+      D[side].forEach(s=>{
+        if(y>270){pdf.addPage();setBg();y=20;}
+        pdf.setFont('helvetica','bold');pdf.setFontSize(8.5);pdf.setTextColor(232,234,240);
+        pdf.text(s.name,M+3,y);
+        pdf.setTextColor(...col);pdf.text(fmt(secTot(s)),W-M-2,y,{align:'right'});y+=6;
+        const printItems=(items,indent=7)=>{
+          (items||[]).forEach(it=>{
+            if(y>272){pdf.addPage();setBg();y=20;}
+            pdf.setFont('helvetica','normal');pdf.setFontSize(7.5);pdf.setTextColor(122,128,144);
+            pdf.text('• '+it.lbl,M+indent,y);
+            pdf.text(it.qty+'×'+fmt(it.price),M+90,y,{align:'right'});
+            pdf.setTextColor(200,200,200);pdf.text(fmt(it.qty*it.price),W-M-2,y,{align:'right'});
+            y+=4.8;
+          });
+        };
+        if(s.type==='sub'){
+          (s.subs||[]).forEach(sub=>{
+            pdf.setFont('helvetica','bold');pdf.setFontSize(7.5);pdf.setTextColor(255,127,192);
+            pdf.text('  ▸ '+sub.name,M+5,y);
+            pdf.text(fmt(subTot(sub)),W-M-2,y,{align:'right'});y+=5;
+            printItems(sub.items,11);
+          });
+        } else printItems(s.items);
+        pdf.setDrawColor(30,30,30);pdf.setLineWidth(0.15);pdf.line(M+3,y,W-M,y);y+=3;
+      });
+      y+=4;
+    };
+    drawPanel('rec','RECETTES',[74,222,128]);
+    drawPanel('dep','DÉPENSES',[248,113,113]);
+    // Matériel
+    if(y>240){pdf.addPage();setBg();y=20;}
+    pdf.setFillColor(20,20,20);pdf.rect(M,y-4,W-2*M,8,'F');
+    pdf.setFont('helvetica','bold');pdf.setFontSize(9);pdf.setTextColor(255,79,163);
+    pdf.text('// MATÉRIEL',M+2,y+1);
+    const matCost=D.mat.filter(m=>m.status==='needed').reduce((s,m)=>s+Number(m.price||0)*Number(m.qty||1),0);
+    pdf.setTextColor(200,200,200);pdf.text(fmt(matCost)+' à acquérir',W-M-2,y+1,{align:'right'});
+    y+=11;
+    D.mat.forEach(m=>{
+      if(y>272){pdf.addPage();setBg();y=20;}
+      pdf.setFont('helvetica','normal');pdf.setFontSize(7.5);
+      pdf.setTextColor(m.status==='owned'?74:248,m.status==='owned'?222:113,m.status==='owned'?128:113);
+      pdf.text(m.status==='owned'?'✓':'→',M+3,y);
+      pdf.setTextColor(200,200,200);pdf.text(m.lbl,M+8,y);
+      pdf.setTextColor(136,136,136);pdf.text(m.cat||'',M+90,y,{align:'right'});
+      if(m.status==='needed'){pdf.setTextColor(248,113,113);pdf.text(fmt(Number(m.price||0)*Number(m.qty||1)),W-M-2,y,{align:'right'});}
+      y+=4.8;
+    });
+    pdf.setFontSize(7);pdf.setTextColor(50,50,50);pdf.text('Project 212 — '+new Date().toLocaleDateString('fr-FR'),M,290);
+    pdf.save('project212-budget-'+new Date().toISOString().slice(0,10)+'.pdf');
+    toast('PDF téléchargé');
+  }catch(e){console.error(e);toast('Erreur: '+e.message);}
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function G(id){return document.getElementById(id);}
+function V(id){return document.getElementById(id)?.value||'';}
+function fmt(n){return Number(n).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';}
+function fmtS(n){return Number(n).toLocaleString('fr-FR',{maximumFractionDigits:0})+' €';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(m){const el=G('toast');el.textContent=m;el.style.display='block';clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',2500);}
+function closeModal(id){G(id).style.display='none';}
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  G('tab-'+id).classList.add('active');if(btn)btn.classList.add('active');
+  if(id==='charts'){renderCharts();setTimeout(renderCharts,100);}
+}
+document.addEventListener('click',e=>{
+  ['modal-sec','modal-sub','modal-edit','modal-mat','modal-mat-cat'].forEach(id=>{if(e.target.id===id)closeModal(id);});
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.classList.contains('add-inp')){
+    const m=e.target.id.match(/^a[lqup]-(.+)$/);
+    if(m) quickAdd(e,m[1]);
+  }
+  if(e.key==='Escape') ['modal-sec','modal-sub','modal-edit','modal-mat','modal-mat-cat'].forEach(id=>closeModal(id));
+});
+
+init();
+</script>
+</body>
+</html>
