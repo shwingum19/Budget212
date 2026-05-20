@@ -246,6 +246,7 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
     <button class="btn btn-ghost btn-sm" onclick="resetAll()">⟳ RESET</button>
     <button class="btn btn-sm" onclick="exportPDF()">↓ PDF</button>
     <button class="btn btn-sm" onclick="exportJPEG()">↓ JPEG</button>
+    <button class="btn btn-sm" style="border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.04);color:#ccc" onclick="exportPDFSubvention()" title="PDF sobre pour dossiers officiels">↓ PDF SUBVENTION</button>
     <button class="btn btn-primary" onclick="saveData()">■ SAUVEGARDER</button>
   </div>
 </header>
@@ -255,6 +256,7 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
   <button class="tab active" onclick="switchTab('budget',this)">// BUDGET</button>
   <button class="tab" onclick="switchTab('materiel',this)">// MATÉRIEL</button>
   <button class="tab" onclick="switchTab('charts',this)">// GRAPHIQUES</button>
+  <button class="tab" onclick="switchTab('asso',this)">// ASSOCIATION</button>
 </div>
 
 <!-- ══ TAB BUDGET ══ -->
@@ -356,6 +358,70 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
         <div style="font-family:var(--display);font-size:28px;font-weight:900;color:var(--pink);text-shadow:var(--glow)" id="big-sol">0 €</div>
         <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--gray);margin-top:6px">SOLDE PRÉVISIONNEL</div>
         <div style="font-family:var(--mono);font-size:10px;margin-top:8px" id="big-sol-lbl">ÉQUILIBRÉ</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB ASSOCIATION ══ -->
+<div class="tab-content" id="tab-asso">
+  <div style="max-width:600px">
+    <div style="margin-bottom:1.5rem">
+      <div style="font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:3px;color:var(--pink);margin-bottom:1rem;text-transform:uppercase">// INFORMATIONS ASSOCIATION</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--gray);margin-bottom:1.25rem;line-height:1.7;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.75rem 1rem;border-left:3px solid var(--pink)">
+        Ces informations apparaîtront dans l'en-tête du <strong style="color:var(--white)">PDF Subvention</strong> (format sobre pour dossiers officiels). Elles ne modifient pas le design de l'interface.
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+      <div>
+        <label style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:5px">Nom de l'association</label>
+        <input class="add-inp" style="width:100%;padding:8px 10px" id="p-nom" placeholder="Nom officiel..." oninput="saveParams()">
+      </div>
+      <div>
+        <label style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:5px">SIREN</label>
+        <input class="add-inp" style="width:100%;padding:8px 10px" id="p-siren" placeholder="123 456 789" oninput="saveParams()">
+      </div>
+      <div>
+        <label style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:5px">Code APE</label>
+        <input class="add-inp" style="width:100%;padding:8px 10px" id="p-ape" placeholder="59.11A" oninput="saveParams()">
+      </div>
+      <div>
+        <label style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:5px">Adresse</label>
+        <input class="add-inp" style="width:100%;padding:8px 10px" id="p-adresse" placeholder="Adresse complète" oninput="saveParams()">
+      </div>
+      <div>
+        <label style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:5px">Email de contact</label>
+        <input class="add-inp" style="width:100%;padding:8px 10px" id="p-email" placeholder="contact@asso.fr" oninput="saveParams()">
+      </div>
+      <div>
+        <label style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:5px">Responsable du projet</label>
+        <input class="add-inp" style="width:100%;padding:8px 10px" id="p-resp" placeholder="Prénom Nom" oninput="saveParams()">
+      </div>
+    </div>
+    <div style="margin-bottom:1.5rem">
+      <label style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:5px">Description du projet (pour en-tête PDF)</label>
+      <textarea class="notes-inp" id="p-desc" rows="3" placeholder="Courte description du projet pour les dossiers officiels..." oninput="saveParams()"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="exportPDFSubvention()">↓ GÉNÉRER PDF SUBVENTION</button>
+      <button class="btn btn-ghost btn-sm" onclick="saveParams()">■ SAUVEGARDER</button>
+    </div>
+    <div style="margin-top:1.5rem;padding:1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r)">
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:var(--gray);text-transform:uppercase;margin-bottom:.75rem">// APERÇU EN-TÊTE PDF</div>
+      <div style="background:#fff;padding:1rem;border-radius:2px;color:#1a1a1a">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;border-bottom:2px solid #1a1a1a">
+          <div>
+            <div style="font-family:serif;font-size:14px;font-weight:bold" id="prev-title">PROJECT 212 — 212 SOMMETS DES PYRÉNÉES</div>
+            <div style="font-size:10px;color:#666;margin-top:2px" id="prev-sub">Association de production audiovisuelle</div>
+          </div>
+          <div style="text-align:right;font-size:9px;color:#666;line-height:1.6" id="prev-infos">
+            <div id="prev-nom">—</div>
+            <div id="prev-siren">SIREN : —</div>
+            <div id="prev-ape">APE : 59.11A</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-size:11px;font-weight:bold;color:#1a1a1a">BUDGET PRÉVISIONNEL</div>
+        <div style="font-size:9px;color:#999;margin-top:2px" id="prev-date">Document établi le —</div>
       </div>
     </div>
   </div>
@@ -510,6 +576,7 @@ async function init(){
   else loadDefaults();
   G('notes').value=D.notes||'';
   render();
+  loadParams();
   updateSaveStatus('LOCAL');
 
   // 2. Attendre Firebase puis charger le cloud
@@ -525,6 +592,7 @@ async function init(){
         localStorage.setItem('p212budget', JSON.stringify(D));
         G('notes').value = D.notes||'';
         render();
+        loadParams();
         toast('Données synchronisées depuis le cloud ☁');
       }
     }
@@ -1149,6 +1217,297 @@ async function exportPDF(){
   }catch(e){console.error(e);toast('Erreur: '+e.message);}
 }
 
+// ── PDF SUBVENTION ────────────────────────────────────────────────
+async function exportPDFSubvention(){
+  toast('Génération PDF subvention...');
+  try{
+    const r=panelTot('rec'),d=panelTot('dep'),sol=r-d;
+    const asso=D._params||{};
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const W=210,M=20;
+
+    // ── PAGE BLANCHE ──
+    pdf.setFillColor(255,255,255);
+    pdf.rect(0,0,W,297,'F');
+
+    // ── EN-TÊTE INSTITUTIONNEL ──
+    pdf.setFont('helvetica','bold');
+    pdf.setFontSize(13);
+    pdf.setTextColor(20,20,20);
+    pdf.text('PROJECT 212 — 212 SOMMETS DES PYRÉNÉES', M, 18);
+
+    pdf.setFont('helvetica','normal');
+    pdf.setFontSize(8);
+    pdf.setTextColor(80,80,80);
+    pdf.text('Association de production audiovisuelle', M, 24);
+
+    // Bloc infos association (droite)
+    const infoX = W - M;
+    pdf.setFontSize(7.5);
+    pdf.setTextColor(100,100,100);
+    [
+      asso.nom_asso || 'Nom de l\'association',
+      asso.siren ? 'SIREN : ' + asso.siren : 'SIREN : —',
+      asso.ape ? 'APE : ' + asso.ape : 'APE : 59.11A',
+      asso.adresse || '',
+    ].filter(Boolean).forEach((line, i) => {
+      pdf.text(line, infoX, 15 + i * 4.5, {align:'right'});
+    });
+
+    // Ligne séparatrice
+    pdf.setDrawColor(20,20,20);
+    pdf.setLineWidth(0.6);
+    pdf.line(M, 30, W-M, 30);
+
+    // Titre document
+    pdf.setFont('helvetica','bold');
+    pdf.setFontSize(14);
+    pdf.setTextColor(20,20,20);
+    pdf.text('BUDGET PRÉVISIONNEL', M, 40);
+
+    pdf.setFont('helvetica','normal');
+    pdf.setFontSize(8);
+    pdf.setTextColor(100,100,100);
+    pdf.text('Document établi le ' + new Date().toLocaleDateString('fr-FR'), M, 46);
+    pdf.text('Ce document est transmis dans le cadre d\'une demande de financement.', M, 51);
+
+    // ── TABLEAU RÉCAPITULATIF ──
+    let y = 60;
+    pdf.setDrawColor(200,200,200);
+    pdf.setLineWidth(0.3);
+
+    // En-têtes tableau
+    pdf.setFillColor(240,240,240);
+    pdf.rect(M, y-5, W-2*M, 8, 'F');
+    pdf.setFont('helvetica','bold');
+    pdf.setFontSize(8);
+    pdf.setTextColor(40,40,40);
+    pdf.text('POSTE', M+2, y);
+    pdf.text('MONTANT', W-M-2, y, {align:'right'});
+    pdf.line(M, y+2, W-M, y+2);
+    y += 8;
+
+    // Recettes
+    pdf.setFont('helvetica','bold');
+    pdf.setFontSize(9);
+    pdf.setTextColor(20,80,40);
+    pdf.text('TOTAL RECETTES', M+2, y);
+    pdf.text(fmt(r), W-M-2, y, {align:'right'});
+    y += 6;
+    D.rec.forEach(s => {
+      if(y > 270){pdf.addPage();pdf.setFillColor(255,255,255);pdf.rect(0,0,W,297,'F');y=20;}
+      const tot = secTot(s);
+      pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(40,40,40);
+      pdf.text(s.name, M+4, y);
+      pdf.text(fmt(tot), W-M-2, y, {align:'right'});
+      y += 5;
+      const printItems = (items, indent=8) => {
+        (items||[]).forEach(it => {
+          if(y > 272){pdf.addPage();pdf.setFillColor(255,255,255);pdf.rect(0,0,W,297,'F');y=20;}
+          pdf.setFont('helvetica','normal');pdf.setFontSize(7.5);pdf.setTextColor(80,80,80);
+          pdf.text(it.lbl, M+indent, y);
+          pdf.setTextColor(120,120,120);
+          pdf.text(it.qty + (it.unit?' '+it.unit:'') + ' × ' + fmt(it.price), M+100, y, {align:'right'});
+          pdf.setTextColor(40,40,40);
+          pdf.text(fmt(it.qty*it.price), W-M-2, y, {align:'right'});
+          y += 4.5;
+        });
+      };
+      if(s.type==='sub'){
+        (s.subs||[]).forEach(sub => {
+          pdf.setFont('helvetica','italic');pdf.setFontSize(7.5);pdf.setTextColor(80,80,80);
+          pdf.text(sub.name, M+6, y);
+          pdf.text(fmt(subTot(sub)), W-M-2, y, {align:'right'});
+          y += 4.5;
+          printItems(sub.items, 10);
+        });
+      } else printItems(s.items);
+      pdf.setDrawColor(220,220,220);pdf.setLineWidth(0.2);
+      pdf.line(M+4, y, W-M, y);
+      y += 3;
+    });
+
+    // Ligne totale recettes
+    pdf.setDrawColor(20,80,40);pdf.setLineWidth(0.4);
+    pdf.line(M, y, W-M, y); y += 4;
+    pdf.setFont('helvetica','bold');pdf.setFontSize(9);pdf.setTextColor(20,80,40);
+    pdf.text('SOUS-TOTAL RECETTES', M+2, y);
+    pdf.text(fmt(r), W-M-2, y, {align:'right'});
+    y += 10;
+
+    // Dépenses
+    if(y > 200){pdf.addPage();pdf.setFillColor(255,255,255);pdf.rect(0,0,W,297,'F');y=20;}
+    pdf.setFont('helvetica','bold');pdf.setFontSize(9);pdf.setTextColor(130,30,30);
+    pdf.text('TOTAL DÉPENSES', M+2, y);
+    pdf.text(fmt(d), W-M-2, y, {align:'right'});
+    y += 6;
+    D.dep.forEach(s => {
+      if(y > 270){pdf.addPage();pdf.setFillColor(255,255,255);pdf.rect(0,0,W,297,'F');y=20;}
+      const tot = secTot(s);
+      pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(40,40,40);
+      pdf.text(s.name, M+4, y);
+      pdf.text(fmt(tot), W-M-2, y, {align:'right'});
+      y += 5;
+      const printItems = (items, indent=8) => {
+        (items||[]).forEach(it => {
+          if(y > 272){pdf.addPage();pdf.setFillColor(255,255,255);pdf.rect(0,0,W,297,'F');y=20;}
+          pdf.setFont('helvetica','normal');pdf.setFontSize(7.5);pdf.setTextColor(80,80,80);
+          pdf.text(it.lbl, M+indent, y);
+          pdf.setTextColor(120,120,120);
+          pdf.text(it.qty + (it.unit?' '+it.unit:'') + ' × ' + fmt(it.price), M+100, y, {align:'right'});
+          pdf.setTextColor(40,40,40);
+          pdf.text(fmt(it.qty*it.price), W-M-2, y, {align:'right'});
+          y += 4.5;
+        });
+      };
+      if(s.type==='sub'){
+        (s.subs||[]).forEach(sub => {
+          pdf.setFont('helvetica','italic');pdf.setFontSize(7.5);pdf.setTextColor(80,80,80);
+          pdf.text(sub.name, M+6, y);
+          pdf.text(fmt(subTot(sub)), W-M-2, y, {align:'right'});
+          y += 4.5;
+          printItems(sub.items, 10);
+        });
+      } else printItems(s.items);
+      pdf.setDrawColor(220,220,220);pdf.setLineWidth(0.2);
+      pdf.line(M+4, y, W-M, y);
+      y += 3;
+    });
+
+    // Ligne totale dépenses
+    pdf.setDrawColor(130,30,30);pdf.setLineWidth(0.4);
+    pdf.line(M, y, W-M, y); y += 4;
+    pdf.setFont('helvetica','bold');pdf.setFontSize(9);pdf.setTextColor(130,30,30);
+    pdf.text('SOUS-TOTAL DÉPENSES', M+2, y);
+    pdf.text(fmt(d), W-M-2, y, {align:'right'});
+    y += 12;
+
+    // ── RÉSULTAT ENCADRÉ ──
+    if(y > 255){pdf.addPage();pdf.setFillColor(255,255,255);pdf.rect(0,0,W,297,'F');y=20;}
+    pdf.setFillColor(sol>=0?240:255, sol>=0?248:240, sol>=0?245:240);
+    pdf.setDrawColor(sol>=0?20:130, sol>=0?80:30, sol>=0?40:30);
+    pdf.setLineWidth(0.5);
+    pdf.rect(M, y-4, W-2*M, 14, 'FD');
+    pdf.setFont('helvetica','bold');pdf.setFontSize(11);
+    pdf.setTextColor(sol>=0?20:130, sol>=0?80:30, sol>=0?40:30);
+    pdf.text(sol>=0 ? 'EXCÉDENT PRÉVISIONNEL' : 'DÉFICIT PRÉVISIONNEL', M+4, y+4);
+    pdf.text(fmt(Math.abs(sol)), W-M-4, y+4, {align:'right'});
+    y += 22;
+
+    // ── MATÉRIEL ──
+    if(y > 240){pdf.addPage();pdf.setFillColor(255,255,255);pdf.rect(0,0,W,297,'F');y=20;}
+    pdf.setDrawColor(200,200,200);pdf.setLineWidth(0.3);
+    pdf.line(M, y, W-M, y); y += 6;
+    pdf.setFont('helvetica','bold');pdf.setFontSize(10);pdf.setTextColor(40,40,40);
+    pdf.text('LISTE DU MATÉRIEL', M, y); y += 6;
+
+    // En-têtes
+    pdf.setFillColor(240,240,240);
+    pdf.rect(M, y-4, W-2*M, 7, 'F');
+    pdf.setFont('helvetica','bold');pdf.setFontSize(7.5);pdf.setTextColor(40,40,40);
+    pdf.text('DÉSIGNATION', M+2, y);
+    pdf.text('CATÉGORIE', M+90, y, {align:'center'});
+    pdf.text('QTÉ', M+120, y, {align:'right'});
+    pdf.text('STATUT', M+140, y, {align:'center'});
+    pdf.text('COÛT ACHAT', W-M-2, y, {align:'right'});
+    y += 5;
+
+    // Items matériel groupés par catégorie
+    const cats = [...new Set(D.mat.map(m=>m.cat||'Autre'))];
+    cats.forEach(cat => {
+      const items = D.mat.filter(m=>(m.cat||'Autre')===cat);
+      if(!items.length) return;
+      if(y > 270){pdf.addPage();pdf.setFillColor(255,255,255);pdf.rect(0,0,W,297,'F');y=20;}
+      pdf.setFillColor(250,250,250);
+      pdf.rect(M, y-3.5, W-2*M, 6, 'F');
+      pdf.setFont('helvetica','bold');pdf.setFontSize(7.5);pdf.setTextColor(60,60,60);
+      pdf.text(cat, M+2, y+0.5);
+      const catCost = items.filter(m=>m.status==='needed').reduce((s,m)=>s+Number(m.price||0)*Number(m.qty||1),0);
+      if(catCost>0){pdf.setTextColor(130,30,30);pdf.text(fmt(catCost), W-M-2, y+0.5, {align:'right'});}
+      y += 7;
+      items.forEach(m => {
+        if(y > 272){pdf.addPage();pdf.setFillColor(255,255,255);pdf.rect(0,0,W,297,'F');y=20;}
+        pdf.setFont('helvetica','normal');pdf.setFontSize(7.5);pdf.setTextColor(40,40,40);
+        pdf.text(m.lbl, M+4, y);
+        pdf.text(String(m.qty||1), M+120, y, {align:'right'});
+        if(m.status==='owned'){pdf.setTextColor(20,100,50);pdf.text('Possédé', M+140, y, {align:'center'});}
+        else{pdf.setTextColor(130,30,30);pdf.text('À acquérir', M+140, y, {align:'center'});
+          pdf.text(fmt(Number(m.price||0)*Number(m.qty||1)), W-M-2, y, {align:'right'});}
+        pdf.setTextColor(40,40,40);
+        y += 4.5;
+      });
+      pdf.setDrawColor(220,220,220);pdf.setLineWidth(0.15);
+      pdf.line(M, y, W-M, y); y += 3;
+    });
+
+    // Total matériel
+    const matCost = D.mat.filter(m=>m.status==='needed').reduce((s,m)=>s+Number(m.price||0)*Number(m.qty||1),0);
+    y += 2;
+    pdf.setFont('helvetica','bold');pdf.setFontSize(8);pdf.setTextColor(40,40,40);
+    pdf.text('COÛT TOTAL ACQUISITION MATÉRIEL', M+2, y);
+    pdf.setTextColor(130,30,30);
+    pdf.text(fmt(matCost), W-M-2, y, {align:'right'});
+    y += 8;
+
+    // ── NOTES ──
+    if(D.notes?.trim()){
+      if(y > 250){pdf.addPage();pdf.setFillColor(255,255,255);pdf.rect(0,0,W,297,'F');y=20;}
+      pdf.setDrawColor(200,200,200);pdf.setLineWidth(0.3);
+      pdf.line(M, y, W-M, y); y += 6;
+      pdf.setFont('helvetica','bold');pdf.setFontSize(9);pdf.setTextColor(40,40,40);
+      pdf.text('NOTES ET HYPOTHÈSES', M, y); y += 5;
+      pdf.setFont('helvetica','normal');pdf.setFontSize(7.5);pdf.setTextColor(80,80,80);
+      const lines = pdf.splitTextToSize(D.notes.replace(/^\/\/ /gm,''), W-2*M);
+      pdf.text(lines, M, y);
+    }
+
+    // ── FOOTER ──
+    const pageCount = pdf.getNumberOfPages();
+    for(let i=1;i<=pageCount;i++){
+      pdf.setPage(i);
+      pdf.setDrawColor(200,200,200);pdf.setLineWidth(0.3);pdf.line(M,286,W-M,286);
+      pdf.setFont('helvetica','normal');pdf.setFontSize(7);pdf.setTextColor(150,150,150);
+      pdf.text('Project 212 — Budget prévisionnel — ' + new Date().toLocaleDateString('fr-FR'), M, 291);
+      pdf.text('Page '+i+'/'+pageCount, W-M, 291, {align:'right'});
+      if(asso.siren) pdf.text('SIREN : '+asso.siren, W/2, 291, {align:'center'});
+    }
+
+    pdf.save('project212-budget-subvention-'+new Date().toISOString().slice(0,10)+'.pdf');
+    toast('PDF subvention téléchargé ✓');
+  }catch(e){console.error(e);toast('Erreur: '+e.message);}
+}
+
+// ── PARAMS ASSOCIATION ────────────────────────────────────────────
+function saveParams(){
+  D._params = {
+    nom_asso: G('p-nom')?.value||'',
+    siren: G('p-siren')?.value||'',
+    ape: G('p-ape')?.value||'59.11A',
+    adresse: G('p-adresse')?.value||'',
+    email: G('p-email')?.value||'',
+    resp: G('p-resp')?.value||'',
+    desc: G('p-desc')?.value||''
+  };
+  updateParamPreview();
+  saveData();
+  toast('Paramètres sauvegardés');
+}
+function loadParams(){
+  const p = D._params||{};
+  ['nom','siren','ape','adresse','email','resp','desc'].forEach(k=>{
+    const el=G('p-'+k); if(el) el.value=p[k==='nom'?'nom_asso':k]||'';
+  });
+  updateParamPreview();
+}
+function updateParamPreview(){
+  const p=D._params||{};
+  const nomEl=G('prev-nom'); if(nomEl) nomEl.textContent=p.nom_asso||'—';
+  const sirenEl=G('prev-siren'); if(sirenEl) sirenEl.textContent='SIREN : '+(p.siren||'—');
+  const apeEl=G('prev-ape'); if(apeEl) apeEl.textContent='APE : '+(p.ape||'59.11A');
+  const dateEl=G('prev-date'); if(dateEl) dateEl.textContent='Document établi le '+new Date().toLocaleDateString('fr-FR');
+}
+
 // ── HELPERS ───────────────────────────────────────────────────────
 function G(id){return document.getElementById(id);}
 function V(id){return document.getElementById(id)?.value||'';}
@@ -1162,6 +1521,7 @@ function switchTab(id,btn){
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
   G('tab-'+id).classList.add('active');if(btn)btn.classList.add('active');
   if(id==='charts'){renderCharts();setTimeout(renderCharts,100);}
+  if(id==='asso'){loadParams();}
 }
 document.addEventListener('click',e=>{
   ['modal-sec','modal-sub','modal-edit','modal-mat','modal-mat-cat'].forEach(id=>{if(e.target.id===id)closeModal(id);});
