@@ -794,13 +794,13 @@ function renderSec(s,side){
 
 function renderLi(it,side,secId){
   return `<div class="li" id="li-${it.id}">
-    <span class="li-lbl">${esc(it.lbl)}</span>
+    <span class="li-lbl" title="Double-clic pour modifier" ondblclick="editLblInline(this,'${side}','${secId}',null,'${it.id}')" style="cursor:text">${esc(it.lbl)}</span>
     <input class="li-inp" type="number" value="${it.qty}" min="0" step="0.5" onchange="updItem('${side}','${secId}',null,'${it.id}','qty',this.value)" title="Qté">
-    <span class="li-unit">${esc(it.unit||'')}</span>
+    <span class="li-unit" ondblclick="editUnitInline(this,'${side}','${secId}',null,'${it.id}')" style="cursor:text;min-width:40px" title="Double-clic pour modifier l'unité">${esc(it.unit||'—')}</span>
     <input class="li-inp" type="number" value="${it.price}" min="0" step="0.01" onchange="updItem('${side}','${secId}',null,'${it.id}','price',this.value)" title="Prix €">
     <span class="li-tot">${fmt(it.qty*it.price)}</span>
     <div style="display:flex;gap:2px">
-      <button class="li-del" onclick="openEditLine('${side}','${secId}',null,'${it.id}')" title="Modifier" style="color:var(--pink2);opacity:0">✏</button>
+      <button class="li-del" onclick="openEditLine('${side}','${secId}',null,'${it.id}')" title="Modifier tout" style="color:var(--pink2);opacity:0">✏</button>
       <button class="li-del" onclick="delLine('${side}','${secId}',null,'${it.id}')" title="Supprimer">✕</button>
     </div>
   </div>`;
@@ -808,13 +808,13 @@ function renderLi(it,side,secId){
 
 function renderSubLi(it,side,secId,subId){
   return `<div class="sub-li li" id="li-${it.id}">
-    <span class="li-lbl">${esc(it.lbl)}</span>
+    <span class="li-lbl" title="Double-clic pour modifier" ondblclick="editLblInline(this,'${side}','${secId}','${subId}','${it.id}')" style="cursor:text">${esc(it.lbl)}</span>
     <input class="li-inp" type="number" value="${it.qty}" min="0" step="0.5" onchange="updItem('${side}','${secId}','${subId}','${it.id}','qty',this.value)" title="Qté">
-    <span class="li-unit">${esc(it.unit||'')}</span>
+    <span class="li-unit" ondblclick="editUnitInline(this,'${side}','${secId}','${subId}','${it.id}')" style="cursor:text;min-width:40px" title="Double-clic pour modifier l'unité">${esc(it.unit||'—')}</span>
     <input class="li-inp" type="number" value="${it.price}" min="0" step="0.01" onchange="updItem('${side}','${secId}','${subId}','${it.id}','price',this.value)" title="Prix €">
     <span class="li-tot">${fmt(it.qty*it.price)}</span>
     <div style="display:flex;gap:2px">
-      <button class="li-del" onclick="openEditLine('${side}','${secId}','${subId}','${it.id}')" title="Modifier" style="color:var(--pink2);opacity:0">✏</button>
+      <button class="li-del" onclick="openEditLine('${side}','${secId}','${subId}','${it.id}')" title="Modifier tout" style="color:var(--pink2);opacity:0">✏</button>
       <button class="li-del" onclick="delLine('${side}','${secId}','${subId}','${it.id}')" title="Supprimer">✕</button>
     </div>
   </div>`;
@@ -860,7 +860,7 @@ function renderMat(){
       <thead><tr><th>DÉSIGNATION</th><th>CAT.</th><th>QTÉ</th><th>STATUT</th><th>PRIX ACHAT</th><th>TOTAL</th><th>NOTES</th><th></th></tr></thead>
       <tbody>
         ${catItems.map(m=>`<tr id="mtr-${m.id}">
-          <td><input class="mat-inp w-lbl" value="${esc(m.lbl)}" onchange="updMat('${m.id}','lbl',this.value)"></td>
+          <td><span style="font-size:12px;color:var(--white);cursor:text" title="Double-clic pour modifier" ondblclick="editMatLblInline(this,'${m.id}')">${esc(m.lbl)}</span></td>
           <td><select class="mat-inp w-cat" onchange="updMat('${m.id}','cat',this.value)">
             ${cats.map(c=>`<option value="${c}"${c===m.cat?' selected':''}>${c}</option>`).join('')}
           </select></td>
@@ -1476,6 +1476,85 @@ async function exportPDFSubvention(){
     pdf.save('project212-budget-subvention-'+new Date().toISOString().slice(0,10)+'.pdf');
     toast('PDF subvention téléchargé ✓');
   }catch(e){console.error(e);toast('Erreur: '+e.message);}
+}
+
+// ── ÉDITION INLINE LIBELLÉS ──────────────────────────────────────
+function editLblInline(span, side, secId, subId, itemId){
+  const items = getItems(side, secId, subId);
+  const it = items?.find(i=>i.id===itemId); if(!it) return;
+  const prev = it.lbl;
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.value = prev;
+  inp.className = 'li-inp';
+  inp.style.cssText = 'width:100%;font-size:12px;font-family:var(--body)';
+  span.replaceWith(inp);
+  inp.focus(); inp.select();
+  const save = () => {
+    const val = inp.value.trim() || prev;
+    it.lbl = val;
+    const newSpan = document.createElement('span');
+    newSpan.className = 'li-lbl';
+    newSpan.title = 'Double-clic pour modifier';
+    newSpan.style.cursor = 'text';
+    newSpan.textContent = val;
+    newSpan.ondblclick = () => editLblInline(newSpan, side, secId, subId, itemId);
+    inp.replaceWith(newSpan);
+    updateSecTotals(side); updateTotals(); saveData();
+  };
+  inp.onblur = save;
+  inp.onkeydown = e => { if(e.key==='Enter') inp.blur(); if(e.key==='Escape'){inp.value=prev;inp.blur();} };
+}
+
+function editUnitInline(span, side, secId, subId, itemId){
+  const items = getItems(side, secId, subId);
+  const it = items?.find(i=>i.id===itemId); if(!it) return;
+  const prev = it.unit||'';
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.value = prev;
+  inp.className = 'li-inp';
+  inp.style.cssText = 'width:70px;font-size:10px';
+  inp.placeholder = 'unité';
+  span.replaceWith(inp);
+  inp.focus(); inp.select();
+  const save = () => {
+    const val = inp.value.trim();
+    it.unit = val;
+    const newSpan = document.createElement('span');
+    newSpan.className = 'li-unit';
+    newSpan.title = 'Double-clic pour modifier l'unité';
+    newSpan.style.cssText = 'cursor:text;min-width:40px';
+    newSpan.textContent = val||'—';
+    newSpan.ondblclick = () => editUnitInline(newSpan, side, secId, subId, itemId);
+    inp.replaceWith(newSpan);
+    saveData();
+  };
+  inp.onblur = save;
+  inp.onkeydown = e => { if(e.key==='Enter') inp.blur(); if(e.key==='Escape'){inp.value=prev;inp.blur();} };
+}
+
+function editMatLblInline(span, id){
+  const m = D.mat.find(x=>x.id===id); if(!m) return;
+  const prev = m.lbl;
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.value = prev;
+  inp.className = 'mat-inp w-lbl';
+  span.replaceWith(inp);
+  inp.focus(); inp.select();
+  const save = () => {
+    const val = inp.value.trim() || prev;
+    m.lbl = val;
+    const newSpan = document.createElement('span');
+    newSpan.style.cssText = 'font-size:12px;color:var(--white);cursor:text';
+    newSpan.title = 'Double-clic pour modifier';
+    newSpan.textContent = val;
+    newSpan.ondblclick = () => editMatLblInline(newSpan, id);
+    inp.replaceWith(newSpan);
+    renderMat(); saveData();
+  };
+  inp.onblur = save;
+  inp.onkeydown = e => { if(e.key==='Enter') inp.blur(); if(e.key==='Escape'){inp.value=prev;inp.blur();} };
 }
 
 // ── PARAMS ASSOCIATION ────────────────────────────────────────────
