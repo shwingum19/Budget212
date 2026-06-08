@@ -255,8 +255,6 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
 <div class="tabs">
   <button class="tab active" onclick="switchTab('budget',this)">// BUDGET</button>
   <button class="tab" onclick="switchTab('materiel',this)">// MATÉRIEL</button>
-  <button class="tab" onclick="switchTab('equipe',this)">// ÉQUIPE</button>
-  <button class="tab" onclick="switchTab('suivi',this)">// SUIVI PROD</button>
   <button class="tab" onclick="switchTab('charts',this)">// GRAPHIQUES</button>
   <button class="tab" onclick="switchTab('asso',this)">// ASSOCIATION</button>
 </div>
@@ -323,44 +321,6 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
     <div class="ms-card" style="border-color:rgba(255,255,255,0.08)"><div class="ms-label">TOTAL ITEMS</div><div class="ms-val" style="color:var(--white)" id="ms-total">0</div></div>
   </div>
   <div class="mat-table-wrap"><div id="mat-table-content"></div></div>
-</div>
-
-<!-- ══ TAB ÉQUIPE ══ -->
-<div class="tab-content" id="tab-equipe">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
-    <div class="mat-title">// ÉQUIPE & BÉNÉVOLES</div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap">
-      <button class="btn btn-sm btn-green" onclick="openAddMembre()">+ MEMBRE</button>
-      <button class="btn btn-sm" onclick="openAddPole()">+ PÔLE</button>
-    </div>
-  </div>
-  <div class="eq-summary">
-    <div class="eq-card"><div class="eq-card-val found" id="eq-found">0</div><div class="eq-card-label">Validés</div></div>
-    <div class="eq-card"><div class="eq-card-val discuss" id="eq-discuss">0</div><div class="eq-card-label">En discussion</div></div>
-    <div class="eq-card"><div class="eq-card-val needed" id="eq-needed">0</div><div class="eq-card-label">À trouver</div></div>
-    <div class="eq-card"><div class="eq-card-val" style="color:var(--white)" id="eq-total">0</div><div class="eq-card-label">Total postes</div></div>
-  </div>
-  <div class="eq-filters" id="eq-filters">
-    <button class="eq-filter-btn active" onclick="filterEq('tous',this)">TOUS</button>
-  </div>
-  <div style="overflow-x:auto">
-    <table class="eq-table">
-      <thead><tr>
-        <th>RÔLE</th><th>PÔLE</th><th>NOM</th><th>STATUT</th>
-        <th>PÉRIODE</th><th>CONTACT</th><th>NOTES</th><th></th>
-      </tr></thead>
-      <tbody id="eq-tbody"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- ══ TAB SUIVI PROD ══ -->
-<div class="tab-content" id="tab-suivi">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px">
-    <div class="mat-title">// SUIVI DE PRODUCTION</div>
-    <button class="btn btn-sm" onclick="openAddPhase()">+ PHASE</button>
-  </div>
-  <div id="suivi-content"></div>
 </div>
 
 <!-- ══ TAB CHARTS ══ -->
@@ -606,66 +566,6 @@ const PINK='#FF4FA3', GREEN='#4ADE80', RED='#F87171', WHITE='#FFFFFF';
 const COLORS=['#FF4FA3','#00D4FF','#4ADE80','#F87171','#FFD700','#BF5FFF','#FF8C00','#00FFCC','#FF6699','#60A5FA'];
 
 // ── INIT ──────────────────────────────────────────────────────────
-// ── DONNÉES ÉQUIPE ───────────────────────────────────────────────
-const EQ_DEFAULT_POLES = ['🎬 Technique','⛑️ Médical','🎒 Logistique','🏔️ Sportif','🧑 Passeur','📸 Ponctuel'];
-const EQ_STATUTS = ['needed','discuss','found','standby'];
-const EQ_STATUT_LABELS = {needed:'🔴 À trouver',discuss:'🟡 En discussion',found:'🟢 Validé',standby:'⚫ Stand-by'};
-
-// ── DONNÉES SUIVI ─────────────────────────────────────────────────
-const SUIVI_DEFAULT = [
-  {id:'ph1',name:'DÉVELOPPEMENT',open:true,tasks:[
-    {id:'t1',label:'Concept & projet défini',status:'done',deadline:''},
-    {id:'t2',label:'Budget prévisionnel',status:'progress',deadline:''},
-    {id:'t3',label:'Note d'intention réalisateur',status:'todo',deadline:'URGENT'},
-    {id:'t4',label:'Synopsis développé',status:'todo',deadline:''},
-  ]},
-  {id:'ph2',name:'RECRUTEMENT',open:true,tasks:[
-    {id:'t5',label:'Scripte',status:'todo',deadline:'Juin 2026 ⚠️'},
-    {id:'t6',label:'Réalisateur attaché officiellement',status:'todo',deadline:'URGENT'},
-    {id:'t7',label:'Chef opérateur',status:'todo',deadline:'Début 2027'},
-    {id:'t8',label:'Équipe technique core',status:'todo',deadline:'Début 2027'},
-    {id:'t9',label:'Équipe médicale',status:'todo',deadline:'Début 2027'},
-    {id:'t10',label:'Coach athlète',status:'todo',deadline:'Sept. 2026'},
-  ]},
-  {id:'ph3',name:'PRÉPARATION',open:false,tasks:[
-    {id:'t11',label:'Trace en cours de préparation',status:'progress',deadline:'Été 2026'},
-    {id:'t12',label:'Droits à l'image athlète signés',status:'todo',deadline:'PRIORITÉ'},
-    {id:'t13',label:'Autorisations Parc National Pyrénées',status:'todo',deadline:'Avant tournage'},
-    {id:'t14',label:'Autorisation PGHM (ravitaillements)',status:'todo',deadline:'Avant tournage'},
-    {id:'t15',label:'Autorisations DGAC drones',status:'todo',deadline:'Avant tournage'},
-    {id:'t16',label:'Assurance production',status:'todo',deadline:'Avant tournage'},
-    {id:'t17',label:'Validation du record (Guinness / FFCAM)',status:'todo',deadline:'À étudier'},
-    {id:'t18',label:'Semaine de test — 6 nuits conditions réelles',status:'todo',deadline:'Mai 2027'},
-  ]},
-  {id:'ph4',name:'FINANCEMENT',open:false,tasks:[
-    {id:'t19',label:'Contacter ALCA pour RDV conseil',status:'todo',deadline:'Avant été 2026'},
-    {id:'t20',label:'Dépôt ALCA / Région N-A',status:'todo',deadline:'1er sept. 2026'},
-    {id:'t21',label:'Dépôt Région Occitanie',status:'todo',deadline:'1er sept. 2026'},
-    {id:'t22',label:'Partenaire vélo trouvé',status:'todo',deadline:'Fin 2026'},
-    {id:'t23',label:'Sponsor chaussure trail signé',status:'todo',deadline:'Janv. 2027 ⚠️'},
-    {id:'t24',label:'Tous sponsors fixés',status:'todo',deadline:'Janv.–fév. 2027'},
-  ]},
-  {id:'ph5',name:'MERCH & COMM',open:false,tasks:[
-    {id:'t25',label:'Design merch fixé',status:'todo',deadline:'Mars 2027'},
-    {id:'t26',label:'Prototypes équipe (test conditions)',status:'todo',deadline:'Mai 2027'},
-    {id:'t27',label:'Lancement communication',status:'todo',deadline:'Mai 2027'},
-    {id:'t28',label:'Ouverture boutique merch',status:'todo',deadline:'Fin août 2027'},
-  ]},
-  {id:'ph6',name:'TOURNAGE',open:false,tasks:[
-    {id:'t29',label:'DÉPART — Tentative du record',status:'todo',deadline:'1ère sem. sept. 2027'},
-    {id:'t30',label:'Monteur progressif actif',status:'todo',deadline:'Pendant tournage'},
-    {id:'t31',label:'Réouverture merch',status:'todo',deadline:'48h après fin'},
-  ]},
-  {id:'ph7',name:'POST-PRODUCTION',open:false,tasks:[
-    {id:'t32',label:'Montage intensif x3 monteurs',status:'todo',deadline:'Fin nov. 2027'},
-    {id:'t33',label:'Mixage son',status:'todo',deadline:'Déc. 2027'},
-    {id:'t34',label:'Étalonnage',status:'todo',deadline:'Déc. 2027'},
-    {id:'t35',label:'Inscriptions festivals',status:'todo',deadline:'Dès achèvement'},
-  ]},
-];
-
-let eqFilter = 'tous';
-
 let _fbUnsub = null;
 let _lastCloudUpdate = 0;
 
@@ -675,8 +575,6 @@ async function init(){
   if(s){try{D=JSON.parse(s);}catch(e){}}
   else loadDefaults();
   G('notes').value=D.notes||'';
-  if(!D.equipe) { const tmp={}; loadDefaults.call({D}); D.equipe=tmp.equipe||{poles:[...EQ_DEFAULT_POLES],membres:[]}; }
-  if(!D.suivi) D.suivi=JSON.parse(JSON.stringify(SUIVI_DEFAULT));
   render();
   loadParams();
   updateSaveStatus('LOCAL');
@@ -691,8 +589,6 @@ async function init(){
       const cloudTs = cloudData._updatedAt||0;
       if(cloudTs > localTs){
         D = cloudData;
-        if(!D.equipe) D.equipe={poles:[...EQ_DEFAULT_POLES],membres:[]};
-        if(!D.suivi) D.suivi=JSON.parse(JSON.stringify(SUIVI_DEFAULT));
         localStorage.setItem('p212budget', JSON.stringify(D));
         G('notes').value = D.notes||'';
         render();
@@ -724,14 +620,14 @@ async function init(){
   else document.addEventListener('fbReady', doFbInit, {once:true});
 }
 
-window.updateSaveStatus = function updateSaveStatus(status){
+function updateSaveStatus(status){
   const el = G('last-save');
   if(!el) return;
   const d = new Date();
   el.textContent = `— ${status} — ${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
 }
 
-window.loadDefaults = function loadDefaults(){
+function loadDefaults(){
   D={
     notes:'// Budget prévisionnel — Project 212\n// Expédition prévue : été 2027',
     matCats:['CAMÉRAS & OPTIQUES','SON','STABILISATION','ÉCLAIRAGE','ÉNERGIE & STOCKAGE','MONTAGNE & SÉCURITÉ','MÉDICAL','COMMUNICATION'],
@@ -834,61 +730,20 @@ window.loadDefaults = function loadDefaults(){
       ]},
     ]
   };
-  // Équipe par défaut
-  if(!D.equipe) D.equipe = {poles: [...EQ_DEFAULT_POLES], membres: [
-    {id:'e1',role:'Réalisateur / DA',pole:'🎬 Technique',nom:'',statut:'needed',periode:'Pré-prod + 45j + post-prod',contact:'',notes:'Priorité absolue'},
-    {id:'e2',role:'Chef opérateur',pole:'🎬 Technique',nom:'',statut:'needed',periode:'45 jours tournage',contact:'',notes:''},
-    {id:'e3',role:'Cadreur 1',pole:'🎬 Technique',nom:'',statut:'needed',periode:'45 jours tournage',contact:'',notes:''},
-    {id:'e4',role:'Cadreur 2',pole:'🎬 Technique',nom:'',statut:'needed',periode:'45 jours tournage',contact:'',notes:''},
-    {id:'e5',role:'Cadreur 3',pole:'🎬 Technique',nom:'',statut:'needed',periode:'45 jours tournage',contact:'',notes:''},
-    {id:'e6',role:'Scripte',pole:'🎬 Technique',nom:'',statut:'needed',periode:'Tournage',contact:'',notes:'URGENT — juin 2026'},
-    {id:'e7',role:'Chef monteur',pole:'🎬 Technique',nom:'',statut:'needed',periode:'Tournage + 3 mois post-prod',contact:'',notes:'Monteur progressif pendant tournage'},
-    {id:'e8',role:'Assistant monteur 1',pole:'🎬 Technique',nom:'',statut:'needed',periode:'3 mois post-prod',contact:'',notes:''},
-    {id:'e9',role:'Assistant monteur 2',pole:'🎬 Technique',nom:'',statut:'needed',periode:'3 mois post-prod',contact:'',notes:''},
-    {id:'e10',role:'Assistant monteur 3',pole:'🎬 Technique',nom:'',statut:'needed',periode:'3 mois post-prod',contact:'',notes:''},
-    {id:'e11',role:'Community Manager',pole:'🎬 Technique',nom:'',statut:'needed',periode:'Continu jusqu'à fin 2027',contact:'',notes:'Contrat prestation'},
-    {id:'e12',role:'Médecin de montagne',pole:'⛑️ Médical',nom:'',statut:'needed',periode:'45 jours tournage',contact:'',notes:'Obligatoire'},
-    {id:'e13',role:'Infirmier secouriste',pole:'⛑️ Médical',nom:'',statut:'needed',periode:'45 jours tournage',contact:'',notes:''},
-    {id:'e14',role:'Nutritionniste',pole:'⛑️ Médical',nom:'',statut:'needed',periode:'Mai 2027 — semaine test',contact:'',notes:''},
-    {id:'e15',role:'Responsable logistique',pole:'🎒 Logistique',nom:'',statut:'needed',periode:'Pré-prod + 45j',contact:'',notes:'Polyvalent'},
-    {id:'e16',role:'Logisticien terrain 1',pole:'🎒 Logistique',nom:'',statut:'needed',periode:'45 jours tournage',contact:'',notes:'Polyvalent'},
-    {id:'e17',role:'Logisticien terrain 2',pole:'🎒 Logistique',nom:'',statut:'needed',periode:'45 jours tournage',contact:'',notes:'Polyvalent'},
-    {id:'e18',role:'Logisticien terrain 3',pole:'🎒 Logistique',nom:'',statut:'needed',periode:'45 jours tournage',contact:'',notes:'Polyvalent'},
-    {id:'e19',role:'Logisticien terrain 4',pole:'🎒 Logistique',nom:'',statut:'needed',periode:'45 jours tournage',contact:'',notes:'Polyvalent'},
-    {id:'e20',role:'Formateur logisticiens',pole:'🎒 Logistique',nom:'Simon (Decath)',statut:'discuss',periode:'Vendredi & dim. dès janvier',contact:'',notes:'Réparation tente, vélo, montage/démontage'},
-    {id:'e21',role:'Coach athlète',pole:'🏔️ Sportif',nom:'',statut:'needed',periode:'Dès sept. 2026',contact:'',notes:'Début prépa physique'},
-    {id:'e22',role:'Guide haute montagne',pole:'🏔️ Sportif',nom:'',statut:'needed',periode:'45 jours tournage',contact:'',notes:''},
-    {id:'e23',role:'Passeur 1',pole:'🧑 Passeur',nom:'',statut:'needed',periode:'2 jours — J4/J5',contact:'',notes:'GoPro fournie — soutien moral + donneur d'allure'},
-    {id:'e24',role:'Passeur 2',pole:'🧑 Passeur',nom:'',statut:'needed',periode:'2 jours',contact:'',notes:'GoPro fournie'},
-    {id:'e25',role:'Passeur 3',pole:'🧑 Passeur',nom:'',statut:'needed',periode:'2 jours',contact:'',notes:'GoPro fournie'},
-    {id:'e26',role:'Passeur 4',pole:'🧑 Passeur',nom:'',statut:'needed',periode:'2 jours',contact:'',notes:'GoPro fournie'},
-    {id:'e27',role:'Passeur 5',pole:'🧑 Passeur',nom:'',statut:'needed',periode:'2 jours',contact:'',notes:'GoPro fournie'},
-    {id:'e28',role:'Passeur 6',pole:'🧑 Passeur',nom:'',statut:'needed',periode:'2 jours',contact:'',notes:'GoPro fournie'},
-    {id:'e29',role:'Passeur 7',pole:'🧑 Passeur',nom:'',statut:'needed',periode:'2 jours',contact:'',notes:'GoPro fournie'},
-    {id:'e30',role:'Passeur 8',pole:'🧑 Passeur',nom:'',statut:'needed',periode:'2 jours',contact:'',notes:'GoPro fournie'},
-    {id:'e31',role:'Passeur 9',pole:'🧑 Passeur',nom:'',statut:'needed',periode:'2 jours',contact:'',notes:'GoPro fournie'},
-    {id:'e32',role:'Passeur 10',pole:'🧑 Passeur',nom:'',statut:'needed',periode:'2 jours',contact:'',notes:'GoPro fournie'},
-    {id:'e33',role:'Photographe TNF Paris',pole:'📸 Ponctuel',nom:'',statut:'discuss',periode:'Dernier jour',contact:'',notes:'Non rémunéré'},
-    {id:'e34',role:'Simon Decath — présence finale',pole:'📸 Ponctuel',nom:'Simon',statut:'discuss',periode:'Dernier jour',contact:'',notes:'Non rémunéré'},
-  ]};
-  // Suivi par défaut
-  if(!D.suivi) D.suivi = JSON.parse(JSON.stringify(SUIVI_DEFAULT));
 }
 
 // ── RENDER ────────────────────────────────────────────────────────
-window.render = function render(){
+function render(){
   renderPanel('rec'); renderPanel('dep');
   renderMat(); renderCharts(); updateTotals();
-  window.renderEquipe && window.renderEquipe();
-  window.renderSuivi && window.renderSuivi();
 }
 
-window.renderPanel = function renderPanel(side){
+function renderPanel(side){
   const el=G(side+'-body');
   el.innerHTML=D[side].map(s=>renderSec(s,side)).join('');
 }
 
-window.renderSec = function renderSec(s,side){
+function renderSec(s,side){
   const tot=secTot(s);
   const open=s.open!==false;
   if(s.type==='sub'){
@@ -937,7 +792,7 @@ window.renderSec = function renderSec(s,side){
   }
 }
 
-window.renderLi = function renderLi(it,side,secId){
+function renderLi(it,side,secId){
   return `<div class="li" id="li-${it.id}">
     <span class="li-lbl" title="Double-clic pour modifier" ondblclick="editLblInline(this,'${side}','${secId}',null,'${it.id}')" style="cursor:text">${esc(it.lbl)}</span>
     <input class="li-inp" type="number" value="${it.qty}" min="0" step="0.5" onchange="updItem('${side}','${secId}',null,'${it.id}','qty',this.value)" title="Qté">
@@ -951,7 +806,7 @@ window.renderLi = function renderLi(it,side,secId){
   </div>`;
 }
 
-window.renderSubLi = function renderSubLi(it,side,secId,subId){
+function renderSubLi(it,side,secId,subId){
   return `<div class="sub-li li" id="li-${it.id}">
     <span class="li-lbl" title="Double-clic pour modifier" ondblclick="editLblInline(this,'${side}','${secId}','${subId}','${it.id}')" style="cursor:text">${esc(it.lbl)}</span>
     <input class="li-inp" type="number" value="${it.qty}" min="0" step="0.5" onchange="updItem('${side}','${secId}','${subId}','${it.id}','qty',this.value)" title="Qté">
@@ -965,7 +820,7 @@ window.renderSubLi = function renderSubLi(it,side,secId,subId){
   </div>`;
 }
 
-window.addRowHTML = function addRowHTML(targetId){
+function addRowHTML(targetId){
   return `<div class="add-row">
     <input class="add-inp lbl" id="al-${targetId}" placeholder="Libellé...">
     <input class="add-inp num" id="aq-${targetId}" placeholder="Qté" value="1" type="number">
@@ -976,7 +831,7 @@ window.addRowHTML = function addRowHTML(targetId){
 }
 
 // ── MATÉRIEL ──────────────────────────────────────────────────────
-window.renderMat = function renderMat(){
+function renderMat(){
   const cats = D.matCats||[];
   const items = D.mat||[];
   let owned=0,needed=0,cost=0;
@@ -1043,15 +898,15 @@ window.renderMat = function renderMat(){
 }
 
 // ── CALCULS ───────────────────────────────────────────────────────
-window.secTot = function secTot(s){
+function secTot(s){
   if(s.type==='sub') return (s.subs||[]).reduce((a,sub)=>a+subTot(sub),0);
   return (s.items||[]).reduce((a,i)=>a+i.qty*i.price,0);
 }
-window.subTot = function subTot(sub){return (sub.items||[]).reduce((a,i)=>a+i.qty*i.price,0);}
-window.panelTot = function panelTot(side){return D[side].reduce((a,s)=>a+secTot(s),0);}
-window.countItems = function countItems(side){return D[side].reduce((a,s)=>a+(s.type==='sub'?(s.subs||[]).reduce((b,sub)=>b+(sub.items||[]).length,0):(s.items||[]).length),0);}
+function subTot(sub){return (sub.items||[]).reduce((a,i)=>a+i.qty*i.price,0);}
+function panelTot(side){return D[side].reduce((a,s)=>a+secTot(s),0);}
+function countItems(side){return D[side].reduce((a,s)=>a+(s.type==='sub'?(s.subs||[]).reduce((b,sub)=>b+(sub.items||[]).length,0):(s.items||[]).length),0);}
 
-window.updateTotals = function updateTotals(){
+function updateTotals(){
   const r=panelTot('rec'),d=panelTot('dep'),sol=r-d,grand=r+d;
   G('tot-rec').textContent=fmt(r); G('tot-dep').textContent=fmt(d);
   G('tot-sol').textContent=fmt(sol);
@@ -1070,12 +925,12 @@ window.updateTotals = function updateTotals(){
 }
 
 // ── ACTIONS BUDGET ────────────────────────────────────────────────
-window.getItems = function getItems(side,secId,subId){
+function getItems(side,secId,subId){
   const s=D[side].find(x=>x.id===secId);
   if(subId){const sub=(s?.subs||[]).find(x=>x.id===subId);return sub?.items;}
   return s?.items;
 }
-window.updItem = function updItem(side,secId,subId,itemId,field,val){
+function updItem(side,secId,subId,itemId,field,val){
   const items=getItems(side,secId,subId);
   const it=items?.find(i=>i.id===itemId);
   if(it){it[field]=parseFloat(val)||0;}
@@ -1083,7 +938,7 @@ window.updItem = function updItem(side,secId,subId,itemId,field,val){
   if(li){const tots=li.querySelectorAll('.li-tot');if(tots[0])tots[0].textContent=fmt(it?.qty*it?.price||0);}
   updateSecTotals(side); updateTotals(); renderCharts(); saveData();
 }
-window.updateSecTotals = function updateSecTotals(side){
+function updateSecTotals(side){
   D[side].forEach(s=>{
     const el=document.querySelector(`#bs-${s.id} .sec-tot`);
     if(el)el.textContent=fmt(secTot(s));
@@ -1093,13 +948,13 @@ window.updateSecTotals = function updateSecTotals(side){
     });
   });
 }
-window.delLine = function delLine(side,secId,subId,itemId){
+function delLine(side,secId,subId,itemId){
   if(!confirm('Supprimer cette ligne ?'))return;
   const items=getItems(side,secId,subId);
   if(items){const idx=items.findIndex(i=>i.id===itemId);if(idx>-1)items.splice(idx,1);}
   renderPanel(side); updateTotals(); renderCharts(); saveData();
 }
-window.openEditLine = function openEditLine(side,secId,subId,itemId){
+function openEditLine(side,secId,subId,itemId){
   const items=getItems(side,secId,subId);
   const it=items?.find(i=>i.id===itemId); if(!it)return;
   pending={type:'editLine',side,secId,subId,itemId};
@@ -1107,9 +962,9 @@ window.openEditLine = function openEditLine(side,secId,subId,itemId){
   updEditPreview();
   G('modal-edit').style.display='flex';
 }
-window.updEditPreview = function updEditPreview(){const q=parseFloat(G('me-qty').value)||0,p=parseFloat(G('me-price').value)||0;G('me-preview').textContent=fmt(q*p);}
+function updEditPreview(){const q=parseFloat(G('me-qty').value)||0,p=parseFloat(G('me-price').value)||0;G('me-preview').textContent=fmt(q*p);}
 G('me-qty').oninput=updEditPreview; G('me-price').oninput=updEditPreview;
-window.confirmEdit = function confirmEdit(){
+function confirmEdit(){
   const {side,secId,subId,itemId}=pending;
   const items=getItems(side,secId,subId);
   const it=items?.find(i=>i.id===itemId); if(!it)return;
@@ -1120,7 +975,7 @@ window.confirmEdit = function confirmEdit(){
   closeModal('modal-edit'); renderPanel(side); updateTotals(); renderCharts(); saveData();
   toast('Ligne modifiée');
 }
-window.quickAdd = function quickAdd(e,targetId){
+function quickAdd(e,targetId){
   e.stopPropagation();
   const lbl=V('al-'+targetId)?.trim(); if(!lbl){toast('Libellé requis');return;}
   const qty=parseFloat(V('aq-'+targetId))||1;
@@ -1137,14 +992,14 @@ window.quickAdd = function quickAdd(e,targetId){
   });
   if(found){render();saveData();}
 }
-window.toggleSec = function toggleSec(side,secId){const s=D[side].find(x=>x.id===secId);if(s)s.open=!s.open;renderPanel(side);saveData();}
-window.toggleSub = function toggleSub(side,secId,subId){const s=D[side].find(x=>x.id===secId);const sub=(s?.subs||[]).find(x=>x.id===subId);if(sub)sub.open=!sub.open;renderPanel(side);saveData();}
-window.delSec = function delSec(side,secId){if(!confirm('Supprimer cette section ?'))return;D[side]=D[side].filter(s=>s.id!==secId);renderPanel(side);updateTotals();renderCharts();saveData();}
-window.delSub = function delSub(side,secId,subId){if(!confirm('Supprimer cette sous-section ?'))return;const s=D[side].find(x=>x.id===secId);if(s)s.subs=s.subs.filter(x=>x.id!==subId);renderPanel(side);updateTotals();renderCharts();saveData();}
+function toggleSec(side,secId){const s=D[side].find(x=>x.id===secId);if(s)s.open=!s.open;renderPanel(side);saveData();}
+function toggleSub(side,secId,subId){const s=D[side].find(x=>x.id===secId);const sub=(s?.subs||[]).find(x=>x.id===subId);if(sub)sub.open=!sub.open;renderPanel(side);saveData();}
+function delSec(side,secId){if(!confirm('Supprimer cette section ?'))return;D[side]=D[side].filter(s=>s.id!==secId);renderPanel(side);updateTotals();renderCharts();saveData();}
+function delSub(side,secId,subId){if(!confirm('Supprimer cette sous-section ?'))return;const s=D[side].find(x=>x.id===secId);if(s)s.subs=s.subs.filter(x=>x.id!==subId);renderPanel(side);updateTotals();renderCharts();saveData();}
 
 // ── MODAL SECTION ─────────────────────────────────────────────────
-window.openAddSec = function openAddSec(side){pending={type:'addSec',side};G('msec-title').textContent='+ NOUVELLE SECTION';G('m-sec-name').value='';G('modal-sec').style.display='flex';setTimeout(()=>G('m-sec-name').focus(),80);}
-window.openEditSecName = function openEditSecName(side,secId){
+function openAddSec(side){pending={type:'addSec',side};G('msec-title').textContent='+ NOUVELLE SECTION';G('m-sec-name').value='';G('modal-sec').style.display='flex';setTimeout(()=>G('m-sec-name').focus(),80);}
+function openEditSecName(side,secId){
   const s=D[side].find(x=>x.id===secId); if(!s)return;
   pending={type:'editSec',side,secId};
   G('msec-title').textContent='RENOMMER LA SECTION';
@@ -1153,7 +1008,7 @@ window.openEditSecName = function openEditSecName(side,secId){
   G('modal-sec').style.display='flex';
   setTimeout(()=>G('m-sec-name').focus(),80);
 }
-window.confirmSec = function confirmSec(){
+function confirmSec(){
   const name=G('m-sec-name').value.trim().toUpperCase(); if(!name){toast('Nom requis');return;}
   if(pending.type==='editSec'){
     const s=D[pending.side].find(x=>x.id===pending.secId);
@@ -1163,8 +1018,8 @@ window.confirmSec = function confirmSec(){
   }
   closeModal('modal-sec'); renderPanel(pending.side); updateTotals(); saveData(); toast(pending.type==='editSec'?'Section renommée':'Section créée');
 }
-window.openAddSub = function openAddSub(side,secId){pending={type:'addSub',side,secId};G('m-sub-name').value='';G('modal-sub').style.display='flex';setTimeout(()=>G('m-sub-name').focus(),80);}
-window.openEditSub = function openEditSub(side,secId,subId){
+function openAddSub(side,secId){pending={type:'addSub',side,secId};G('m-sub-name').value='';G('modal-sub').style.display='flex';setTimeout(()=>G('m-sub-name').focus(),80);}
+function openEditSub(side,secId,subId){
   const s=D[side].find(x=>x.id===secId);
   const sub=(s?.subs||[]).find(x=>x.id===subId); if(!sub)return;
   pending={type:'editSub',side,secId,subId};
@@ -1172,7 +1027,7 @@ window.openEditSub = function openEditSub(side,secId,subId){
   G('modal-sub').style.display='flex';
   setTimeout(()=>G('m-sub-name').focus(),80);
 }
-window.confirmSub = function confirmSub(){
+function confirmSub(){
   const name=G('m-sub-name').value.trim().toUpperCase(); if(!name){toast('Nom requis');return;}
   const s=D[pending.side].find(x=>x.id===pending.secId);
   if(pending.type==='editSub'){
@@ -1186,16 +1041,16 @@ window.confirmSub = function confirmSub(){
 }
 
 // ── ACTIONS MATÉRIEL ──────────────────────────────────────────────
-window.updMatCatSelect = function updMatCatSelect(){G('mm-cat').innerHTML=`<option value="">Sélectionner...</option>`+(D.matCats||[]).map(c=>`<option value="${c}">${c}</option>`).join('');}
-window.openAddMat = function openAddMat(status){pending={type:'addMat',editId:null};updMatCatSelect();G('mmat-title').textContent='+ MATÉRIEL';G('mm-lbl').value='';G('mm-qty').value='1';G('mm-status').value=status;G('mm-price').value='0';G('mm-notes').value='';G('modal-mat').style.display='flex';setTimeout(()=>G('mm-lbl').focus(),80);}
-window.confirmMat = function confirmMat(){
+function updMatCatSelect(){G('mm-cat').innerHTML=`<option value="">Sélectionner...</option>`+(D.matCats||[]).map(c=>`<option value="${c}">${c}</option>`).join('');}
+function openAddMat(status){pending={type:'addMat',editId:null};updMatCatSelect();G('mmat-title').textContent='+ MATÉRIEL';G('mm-lbl').value='';G('mm-qty').value='1';G('mm-status').value=status;G('mm-price').value='0';G('mm-notes').value='';G('modal-mat').style.display='flex';setTimeout(()=>G('mm-lbl').focus(),80);}
+function confirmMat(){
   const lbl=G('mm-lbl').value.trim(); if(!lbl){toast('Désignation requise');return;}
   const item={id:pending.editId||'m'+Date.now(),lbl,cat:G('mm-cat').value,qty:parseInt(G('mm-qty').value)||1,status:G('mm-status').value,price:parseFloat(G('mm-price').value)||0,notes:G('mm-notes').value.trim()};
   if(pending.editId){const idx=D.mat.findIndex(m=>m.id===pending.editId);if(idx>-1)D.mat[idx]=item;}
   else D.mat.push(item);
   closeModal('modal-mat'); renderMat(); renderCharts(); saveData(); toast('Matériel enregistré');
 }
-window.updMat = function updMat(id,field,val){
+function updMat(id,field,val){
   const m=D.mat.find(x=>x.id===id); if(!m)return;
   if(['qty','price'].includes(field))m[field]=parseFloat(val)||0; else m[field]=val;
   // Mettre à jour la cellule total sans re-render complet
@@ -1212,180 +1067,14 @@ window.updMat = function updMat(id,field,val){
   }
   renderMat(); renderCharts(); saveData();
 }
-window.toggleMatStatus = function toggleMatStatus(id){const m=D.mat.find(x=>x.id===id);if(m){m.status=m.status==='owned'?'needed':'owned';if(m.status==='owned')m.price=0;renderMat();renderCharts();saveData();}}
-window.delMat = function delMat(id){if(!confirm('Supprimer ?'))return;D.mat=D.mat.filter(m=>m.id!==id);renderMat();renderCharts();saveData();}
-window.openAddMatCat = function openAddMatCat(){G('mmc-name').value='';G('modal-mat-cat').style.display='flex';setTimeout(()=>G('mmc-name').focus(),80);}
-window.confirmMatCat = function confirmMatCat(){const name=G('mmc-name').value.trim().toUpperCase();if(!name){toast('Nom requis');return;}if(D.matCats.includes(name)){toast('Catégorie déjà existante');return;}D.matCats.push(name);closeModal('modal-mat-cat');renderMat();saveData();toast('Catégorie créée');}
+function toggleMatStatus(id){const m=D.mat.find(x=>x.id===id);if(m){m.status=m.status==='owned'?'needed':'owned';if(m.status==='owned')m.price=0;renderMat();renderCharts();saveData();}}
+function delMat(id){if(!confirm('Supprimer ?'))return;D.mat=D.mat.filter(m=>m.id!==id);renderMat();renderCharts();saveData();}
+function openAddMatCat(){G('mmc-name').value='';G('modal-mat-cat').style.display='flex';setTimeout(()=>G('mmc-name').focus(),80);}
+function confirmMatCat(){const name=G('mmc-name').value.trim().toUpperCase();if(!name){toast('Nom requis');return;}if(D.matCats.includes(name)){toast('Catégorie déjà existante');return;}D.matCats.push(name);closeModal('modal-mat-cat');renderMat();saveData();toast('Catégorie créée');}
 function delMatCat(cat){if(!confirm(`Supprimer la catégorie "${cat}" ?\nLes items ne seront pas supprimés.`))return;D.matCats=D.matCats.filter(c=>c!==cat);renderMat();saveData();}
 
-// ── ÉQUIPE ────────────────────────────────────────────────────────
-window.renderEquipe = function(){
-  const eq = D.equipe || {poles:[],membres:[]};
-  const membres = eq.membres || [];
-  const found = membres.filter(m=>m.statut==='found').length;
-  const discuss = membres.filter(m=>m.statut==='discuss').length;
-  const needed = membres.filter(m=>m.statut==='needed').length;
-  G('eq-found').textContent = found;
-  G('eq-discuss').textContent = discuss;
-  G('eq-needed').textContent = needed;
-  G('eq-total').textContent = membres.length;
-  // Filtres pôles
-  const poles = eq.poles || [];
-  G('eq-filters').innerHTML = `
-    <button class="eq-filter-btn ${eqFilter==='tous'?'active':''}" onclick="filterEq('tous',this)">TOUS</button>
-    ${poles.map(p=>`<button class="eq-filter-btn ${eqFilter===p?'active':''}" onclick="filterEq('${p}',this)">${p}</button>`).join('')}
-    <button class="eq-filter-btn ${eqFilter==='needed'?'active':''}" onclick="filterEq('needed',this)" style="border-color:var(--red);color:var(--red)">🔴 À TROUVER</button>
-    <button class="eq-filter-btn ${eqFilter==='found'?'active':''}" onclick="filterEq('found',this)" style="border-color:var(--green);color:var(--green)">🟢 VALIDÉS</button>`;
-  // Tableau
-  let filtered = membres;
-  if(eqFilter === 'needed') filtered = membres.filter(m=>m.statut==='needed');
-  else if(eqFilter === 'found') filtered = membres.filter(m=>m.statut==='found');
-  else if(eqFilter !== 'tous') filtered = membres.filter(m=>m.pole===eqFilter);
-  G('eq-tbody').innerHTML = filtered.map(m=>`<tr id="eqrow-${m.id}">
-    <td><input class="eq-inp w-name" value="${esc(m.role)}" onchange="updMembre('${m.id}','role',this.value)" placeholder="Rôle..."></td>
-    <td><span class="eq-pole">${esc(m.pole)}</span></td>
-    <td><input class="eq-inp w-name" value="${esc(m.nom)}" onchange="updMembre('${m.id}','nom',this.value)" placeholder="Prénom Nom..."></td>
-    <td>
-      <button class="eq-status ${m.statut}" onclick="cycleStatut('${m.id}')">${EQ_STATUT_LABELS[m.statut]||m.statut}</button>
-    </td>
-    <td><input class="eq-inp w-period" value="${esc(m.periode)}" onchange="updMembre('${m.id}','periode',this.value)" placeholder="Période..."></td>
-    <td><input class="eq-inp w-period" value="${esc(m.contact)}" onchange="updMembre('${m.id}','contact',this.value)" placeholder="Email / Tel..."></td>
-    <td><input class="eq-inp w-notes" value="${esc(m.notes)}" onchange="updMembre('${m.id}','notes',this.value)" placeholder="Notes..."></td>
-    <td><button class="task-del" onclick="delMembre('${m.id}')">✕</button></td>
-  </tr>`).join('') || `<tr><td colspan="8" style="text-align:center;padding:2rem;font-family:var(--mono);font-size:11px;color:var(--gray2)">Aucun membre trouvé</td></tr>`;
-};
-
-window.cycleStatut = function(id){
-  const m = (D.equipe.membres||[]).find(x=>x.id===id); if(!m) return;
-  const idx = EQ_STATUTS.indexOf(m.statut);
-  m.statut = EQ_STATUTS[(idx+1)%EQ_STATUTS.length];
-  renderEquipe(); saveData();
-};
-window.updMembre = function(id,field,val){
-  const m = (D.equipe.membres||[]).find(x=>x.id===id); if(!m) return;
-  m[field]=val; saveData();
-};
-window.delMembre = function(id){
-  if(!confirm('Supprimer ce membre ?')) return;
-  D.equipe.membres = D.equipe.membres.filter(m=>m.id!==id);
-  renderEquipe(); saveData();
-};
-window.filterEq = function(f, btn){
-  eqFilter = f;
-  renderEquipe();
-};
-window.openAddMembre = function(){
-  pending={type:'addMembre'};
-  const poles = D.equipe?.poles || EQ_DEFAULT_POLES;
-  G('m-sub-name').value='';
-  // Réutiliser modal-sub pour simplicité
-  G('modal-sub').style.display='flex';
-  G('modal-sub').querySelector('h3').textContent='+ NOUVEAU MEMBRE';
-  G('modal-sub').querySelector('.mrow label').textContent='Rôle';
-};
-window.openAddPole = function(){
-  pending={type:'addPole'};
-  G('m-sub-name').value='';
-  G('modal-sub').style.display='flex';
-  G('modal-sub').querySelector('h3').textContent='+ NOUVEAU PÔLE';
-  G('modal-sub').querySelector('.mrow label').textContent='Nom du pôle';
-};
-// Patch confirmSub pour gérer équipe
-const _origConfirmSub = window.confirmSub;
-window.confirmSub = function(){
-  if(pending.type==='addMembre'){
-    const role = G('m-sub-name').value.trim(); if(!role){toast('Rôle requis');return;}
-    if(!D.equipe) D.equipe={poles:[...EQ_DEFAULT_POLES],membres:[]};
-    D.equipe.membres.push({id:'e'+Date.now(),role,pole:D.equipe.poles[0]||'',nom:'',statut:'needed',periode:'',contact:'',notes:''});
-    closeModal('modal-sub'); renderEquipe(); saveData(); toast('Membre ajouté');
-  } else if(pending.type==='addPole'){
-    const name = G('m-sub-name').value.trim().toUpperCase(); if(!name){toast('Nom requis');return;}
-    if(!D.equipe) D.equipe={poles:[...EQ_DEFAULT_POLES],membres:[]};
-    if(!D.equipe.poles.includes(name)) D.equipe.poles.push(name);
-    closeModal('modal-sub'); renderEquipe(); saveData(); toast('Pôle créé');
-  } else if(_origConfirmSub) _origConfirmSub();
-};
-
-// ── SUIVI DE PRODUCTION ───────────────────────────────────────────
-window.renderSuivi = function(){
-  const phases = D.suivi || [];
-  G('suivi-content').innerHTML = phases.map(ph=>{
-    const total = ph.tasks.length;
-    const done = ph.tasks.filter(t=>t.status==='done').length;
-    const pct = total > 0 ? Math.round(done/total*100) : 0;
-    return `<div class="phase-block">
-      <div class="phase-head">
-        <span class="phase-title">${esc(ph.name)}</span>
-        <span class="phase-prog">${done}/${total} — ${pct}%</span>
-        <button class="btn btn-xs btn-ghost" onclick="togglePhase('${ph.id}')">${ph.open?'▲':'▼'}</button>
-        <button class="btn btn-xs btn-ghost" onclick="delPhase('${ph.id}')">✕</button>
-      </div>
-      <div class="phase-bar"><div class="phase-bar-fill" style="width:${pct}%"></div></div>
-      ${ph.open ? `
-        ${ph.tasks.map(t=>`<div class="task-item">
-          <button class="task-status-btn ${t.status}" onclick="cycleTask('${ph.id}','${t.id}')" title="${t.status==='todo'?'Cliquer pour démarrer':t.status==='progress'?'Cliquer pour terminer':'Terminé'}">
-            ${t.status==='done'?'✓':t.status==='progress'?'…':''}
-          </button>
-          <span class="task-label ${t.status==='done'?'done-label':''}">${esc(t.label)}</span>
-          ${t.deadline?`<span class="task-deadline ${t.deadline.includes('⚠️')||t.deadline.includes('URGENT')||t.deadline.includes('PRIORITÉ')?'urgent':''}">${esc(t.deadline)}</span>`:''}
-          <button class="task-del" onclick="delTask('${ph.id}','${t.id}')">✕</button>
-        </div>`).join('')}
-        <div class="add-task-row">
-          <input class="add-inp lbl" id="atl-${ph.id}" placeholder="Nouvelle tâche...">
-          <input class="add-inp unt" id="atd-${ph.id}" placeholder="Deadline">
-          <button class="btn btn-sm" onclick="quickAddTask('${ph.id}')">+ ADD</button>
-        </div>
-      ` : ''}
-    </div>`;
-  }).join('') || `<div style="text-align:center;padding:2rem;font-family:var(--mono);font-size:11px;color:var(--gray2)">Aucune phase — ajoutez-en une</div>`;
-};
-
-window.cycleTask = function(phId, tId){
-  const ph = D.suivi.find(p=>p.id===phId); if(!ph) return;
-  const t = ph.tasks.find(x=>x.id===tId); if(!t) return;
-  const cycle = {todo:'progress',progress:'done',done:'todo'};
-  t.status = cycle[t.status]||'todo';
-  renderSuivi(); saveData();
-};
-window.togglePhase = function(phId){
-  const ph = D.suivi.find(p=>p.id===phId); if(!ph) return;
-  ph.open = !ph.open; renderSuivi(); saveData();
-};
-window.delPhase = function(phId){
-  if(!confirm('Supprimer cette phase ?')) return;
-  D.suivi = D.suivi.filter(p=>p.id!==phId); renderSuivi(); saveData();
-};
-window.delTask = function(phId, tId){
-  const ph = D.suivi.find(p=>p.id===phId); if(!ph) return;
-  ph.tasks = ph.tasks.filter(t=>t.id!==tId); renderSuivi(); saveData();
-};
-window.quickAddTask = function(phId){
-  const lbl = V('atl-'+phId)?.trim(); if(!lbl){toast('Libellé requis');return;}
-  const deadline = V('atd-'+phId)?.trim();
-  const ph = D.suivi.find(p=>p.id===phId); if(!ph) return;
-  ph.tasks.push({id:'t'+Date.now(),label:lbl,status:'todo',deadline});
-  renderSuivi(); saveData();
-};
-window.openAddPhase = function(){
-  pending={type:'addPhase'};
-  G('m-sub-name').value='';
-  G('modal-sub').style.display='flex';
-  G('modal-sub').querySelector('h3').textContent='+ NOUVELLE PHASE';
-  G('modal-sub').querySelector('.mrow label').textContent='Nom de la phase';
-};
-// Patch pour gérer addPhase dans confirmSub
-const _origConfirmSub2 = window.confirmSub;
-window.confirmSub = function(){
-  if(pending.type==='addPhase'){
-    const name = G('m-sub-name').value.trim().toUpperCase(); if(!name){toast('Nom requis');return;}
-    if(!D.suivi) D.suivi=[];
-    D.suivi.push({id:'ph'+Date.now(),name,open:true,tasks:[]});
-    closeModal('modal-sub'); renderSuivi(); saveData(); toast('Phase créée');
-  } else if(_origConfirmSub2) _origConfirmSub2();
-};
-
 // ── CHARTS ────────────────────────────────────────────────────────
-window.renderCharts = function renderCharts(){
+function renderCharts(){
   const r=panelTot('rec'),d=panelTot('dep');
   mkC('ch-global','doughnut',{labels:['Recettes','Dépenses'],datasets:[{data:[Math.round(r),Math.round(d)],backgroundColor:[GREEN+'88',RED+'88'],borderColor:[GREEN,RED],borderWidth:2,hoverOffset:6}]});
   const rSecs=D.rec.map(s=>({n:s.name,v:secTot(s)})).filter(s=>s.v>0);
@@ -1400,7 +1089,7 @@ window.renderCharts = function renderCharts(){
   mkC('ch-mat-cat','bar',{labels:mce.map(([k])=>k.length>12?k.slice(0,11)+'…':k),datasets:[{label:'Coût',data:mce.map(([,v])=>Math.round(v)),backgroundColor:PINK+'88',borderColor:PINK,borderWidth:1,borderRadius:3}]},{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtS(v),font:{size:9},color:'#888'},grid:{color:'rgba(255,255,255,0.04)'}},x:{ticks:{font:{size:8},color:'#888'},grid:{display:false}}}});
 }
 
-window.mkC = function mkC(id,type,data,opts={}){
+function mkC(id,type,data,opts={}){
   if(charts[id]){charts[id].destroy();delete charts[id];}
   const canvas=G(id);if(!canvas)return;
   Chart.defaults.color='#888';
@@ -1408,10 +1097,10 @@ window.mkC = function mkC(id,type,data,opts={}){
   charts[id]=new Chart(canvas.getContext('2d'),{type,data,options:{...base,...opts,plugins:{...base.plugins,...(opts.plugins||{})}}});
 }
 
-window.dlChart = function dlChart(id){const c=G(id);if(!c)return;const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=id+'.png';a.click();toast('PNG téléchargé');}
+function dlChart(id){const c=G(id);if(!c)return;const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=id+'.png';a.click();toast('PNG téléchargé');}
 
 // ── SAVE / EXPORT ─────────────────────────────────────────────────
-window.saveData = function saveData(){
+function saveData(){
   D.notes=G('notes')?.value||'';
   D._updatedAt = Date.now();
   localStorage.setItem('p212budget',JSON.stringify(D));
@@ -1425,7 +1114,7 @@ window.saveData = function saveData(){
     updateSaveStatus('LOCAL');
   }
 }
-window.resetAll = function resetAll(){
+function resetAll(){
   if(!confirm('Réinitialiser toutes les données ? Cette action supprime aussi les données cloud.'))return;
   localStorage.removeItem('p212budget');
   if(window._fb_saveToCloud){
@@ -1434,7 +1123,7 @@ window.resetAll = function resetAll(){
   } else location.reload();
 }
 
-async window.exportJPEG = function exportJPEG(){
+async function exportJPEG(){
   toast('Capture...');
   try{
     const c=await html2canvas(document.querySelector('.wrap'),{backgroundColor:'#0D0D0D',scale:2,useCORS:true,logging:false});
@@ -1443,7 +1132,7 @@ async window.exportJPEG = function exportJPEG(){
   }catch(e){toast('Erreur: '+e.message);}
 }
 
-async window.exportPDF = function exportPDF(){
+async function exportPDF(){
   toast('Génération PDF...');
   try{
     const r=panelTot('rec'),d=panelTot('dep'),sol=r-d;
@@ -1529,7 +1218,7 @@ async window.exportPDF = function exportPDF(){
 }
 
 // ── PDF SUBVENTION ────────────────────────────────────────────────
-async window.exportPDFSubvention = function exportPDFSubvention(){
+async function exportPDFSubvention(){
   toast('Génération PDF subvention...');
   try{
     const r=panelTot('rec'),d=panelTot('dep'),sol=r-d;
@@ -1869,7 +1558,7 @@ function editMatLblInline(span, id){
 }
 
 // ── PARAMS ASSOCIATION ────────────────────────────────────────────
-window.saveParams = function saveParams(){
+function saveParams(){
   D._params = {
     nom_asso: G('p-nom')?.value||'',
     siren: G('p-siren')?.value||'',
@@ -1883,14 +1572,14 @@ window.saveParams = function saveParams(){
   saveData();
   toast('Paramètres sauvegardés');
 }
-window.loadParams = function loadParams(){
+function loadParams(){
   const p = D._params||{};
   ['nom','siren','ape','adresse','email','resp','desc'].forEach(k=>{
     const el=G('p-'+k); if(el) el.value=p[k==='nom'?'nom_asso':k]||'';
   });
   updateParamPreview();
 }
-window.updateParamPreview = function updateParamPreview(){
+function updateParamPreview(){
   const p=D._params||{};
   const nomEl=G('prev-nom'); if(nomEl) nomEl.textContent=p.nom_asso||'—';
   const sirenEl=G('prev-siren'); if(sirenEl) sirenEl.textContent='SIREN : '+(p.siren||'—');
@@ -1899,24 +1588,19 @@ window.updateParamPreview = function updateParamPreview(){
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────
-window.G = function G(id){return document.getElementById(id);}
 function G(id){return document.getElementById(id);}
-window.closeModal = function(id){const el=document.getElementById(id);if(el)el.style.display='none';};
-window.toggleSB = function(){const sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');};
 function V(id){return document.getElementById(id)?.value||'';}
 function fmt(n){return Number(n).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';}
 function fmtS(n){return Number(n).toLocaleString('fr-FR',{maximumFractionDigits:0})+' €';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-window.toast = function toast(m){const el=G('toast');el.textContent=m;el.style.display='block';clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',2500);}
-window.closeModal = function closeModal(id){G(id).style.display='none';}
-window.switchTab = function switchTab(id,btn){
+function toast(m){const el=G('toast');el.textContent=m;el.style.display='block';clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',2500);}
+function closeModal(id){G(id).style.display='none';}
+function switchTab(id,btn){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
   G('tab-'+id).classList.add('active');if(btn)btn.classList.add('active');
   if(id==='charts'){renderCharts();setTimeout(renderCharts,100);}
   if(id==='asso'){loadParams();}
-  if(id==='equipe'){window.renderEquipe&&window.renderEquipe();}
-  if(id==='suivi'){window.renderSuivi&&window.renderSuivi();}
 }
 document.addEventListener('click',e=>{
   ['modal-sec','modal-sub','modal-edit','modal-mat','modal-mat-cat'].forEach(id=>{if(e.target.id===id)closeModal(id);});
